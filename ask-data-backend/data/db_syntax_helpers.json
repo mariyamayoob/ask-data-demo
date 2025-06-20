@@ -1,0 +1,92 @@
+{
+    "framework_info": {
+      "version": "1.0",
+      "description": "Generic database syntax helpers - DO NOT MODIFY",
+      "purpose": "Provides database-specific SQL syntax for any SQL database",
+      "maintainer": "AskData Framework Team"
+    },
+    
+    "database_config": {
+      "mysql": {
+        "sql_hints": [
+          "Use DATE_SUB(NOW(), INTERVAL n MONTH/DAY/YEAR) for date arithmetic",
+          "Use CONCAT(field1, ' ', field2) for string concatenation",
+          "Use LIMIT n for result limiting",
+          "Use IFNULL(field, default) for null handling",
+          "Use DATE_FORMAT() for date formatting"
+        ],
+        "functions": {
+          "date_subtract": "DATE_SUB(NOW(), INTERVAL {value} {unit})",
+          "string_concat": "CONCAT({fields})",
+          "limit_syntax": "LIMIT {count}",
+          "null_check": "IFNULL({field}, {default})"
+        }
+      },
+      "postgresql": {
+        "sql_hints": [
+          "Use NOW() - INTERVAL 'n months/days/years' for date arithmetic",
+          "Use field1 || ' ' || field2 for string concatenation",
+          "Use LIMIT n for result limiting",
+          "Use COALESCE(field, default) for null handling",
+          "Use TO_CHAR() for date formatting"
+        ],
+        "functions": {
+          "date_subtract": "NOW() - INTERVAL '{value} {unit}'",
+          "string_concat": "{fields}",
+          "limit_syntax": "LIMIT {count}",
+          "null_check": "COALESCE({field}, {default})"
+        }
+      },
+      "sqlite": {
+        "sql_hints": [
+          "Use datetime('now', '-n months/days/years') for date arithmetic",
+          "Use field1 || ' ' || field2 for string concatenation",
+          "Use LIMIT n for result limiting",
+          "Use IFNULL(field, default) for null handling",
+          "Use strftime() for date formatting"
+        ],
+        "functions": {
+          "date_subtract": "datetime('now', '-{value} {unit}')",
+          "string_concat": "{fields}",
+          "limit_syntax": "LIMIT {count}",
+          "null_check": "IFNULL({field}, {default})"
+        }
+      },
+      "sqlserver": {
+        "sql_hints": [
+          "Use DATEADD(MONTH/DAY/YEAR, -n, GETDATE()) for date arithmetic",
+          "Use field1 + ' ' + field2 for string concatenation",
+          "Use TOP n for result limiting",
+          "Use ISNULL(field, default) for null handling",
+          "Use FORMAT() for date formatting"
+        ],
+        "functions": {
+          "date_subtract": "DATEADD({unit}, -{value}, GETDATE())",
+          "string_concat": "{fields}",
+          "limit_syntax": "TOP {count}",
+          "null_check": "ISNULL({field}, {default})"
+        }
+      },
+      "oracle": {
+        "sql_hints": [
+          "Use SYSDATE - INTERVAL 'n' MONTH/DAY/YEAR for date arithmetic",
+          "Use field1 || ' ' || field2 for string concatenation",
+          "Use ROWNUM <= n for result limiting",
+          "Use NVL(field, default) for null handling",
+          "Use TO_CHAR() for date formatting"
+        ],
+        "functions": {
+          "date_subtract": "SYSDATE - INTERVAL '{value}' {unit}",
+          "string_concat": "{fields}",
+          "limit_syntax": "WHERE ROWNUM <= {count}",
+          "null_check": "NVL({field}, {default})"
+        }
+      }
+    },
+    
+    "execution": {
+      "max_rows": 1000,
+      "timeout_seconds": 30,
+      "dangerous_words": ["DROP", "DELETE", "UPDATE", "INSERT", "ALTER", "CREATE", "TRUNCATE", "GRANT", "REVOKE"]
+    }
+  }

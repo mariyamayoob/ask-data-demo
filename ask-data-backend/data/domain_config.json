@@ -1,0 +1,111 @@
+{
+  "domain_info": {
+    "domain_name": "banking_transfers",
+    "version": "1.0",
+    "description": "Banking domain configuration - CUSTOMIZE FOR YOUR DOMAIN",
+    "purpose": "Business rules, table priorities, and domain-specific logic"
+  },
+  
+  "default_tables": {
+    "emergency_fallback": ["payment_instructions", "account_details"],
+    "keyword_fallback": ["payment_instructions", "account_details"],
+    "primary_tables": ["payment_instructions", "account_details", "customers", "account_holders"]
+  },
+  
+  "table_priorities": {
+    "payment_instructions": 10,
+    "account_details": 9,
+    "customers": 8,
+    "account_holders": 7,
+    "transactions": 6,
+    "beneficiaries": 5,
+    "recurrence_instructions": 4,
+    "account_limits": 3,
+    "audit_trail": 2,
+    "error_logs": 2,
+    "system_parameters": 1,
+    "holiday_calendar": 1
+  },
+  
+  "table_hints": {
+    "customers": [
+      "For full names, concatenate first and last name fields using database-specific syntax",
+      "Always join via relationship tables when connecting to other entities",
+      "Filter by status field for active records only"
+    ],
+    "account_details": [
+      "Use balance fields for financial calculations",
+      "Check status field for active accounts",
+      "Join with relationship tables to get ownership info"
+    ],
+    "payment_instructions": [
+      "Use status field for filtering transaction states",
+      "Date fields may be NULL for immediate transactions",
+      "Join with account tables for payer and payee details"
+    ],
+    "transactions": [
+      "Transaction type shows perspective per account",
+      "Use date fields for timing queries using database-specific date functions",
+      "Reference fields link to related accounts"
+    ]
+  },
+  
+  "business_rules": {
+    "high_value_threshold": 5000.00,
+    "daily_limit_default": 50000.00,
+    "currency_default": "USD",
+    "priority_levels": ["LOW", "NORMAL", "HIGH", "URGENT"],
+    "transfer_statuses": ["PENDING", "SCHEDULED", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED", "REJECTED"],
+    "account_types": ["SAVINGS", "CURRENT", "FIXED_DEPOSIT", "LOAN"],
+    "customer_types": ["INDIVIDUAL", "CORPORATE", "GOVERNMENT"]
+  },
+  
+  "query_keywords": {
+    "transfer_related": ["transfer", "payment", "send", "money", "amount", "payer", "payee", "transaction"],
+    "customer_related": ["customer", "name", "person", "individual", "corporate", "client"],
+    "account_related": ["account", "balance", "savings", "current", "checking", "wallet"],
+    "status_related": ["pending", "completed", "failed", "active", "inactive", "cancelled"],
+    "time_related": ["today", "recent", "scheduled", "date", "time", "when", "latest"],
+    "amount_related": ["over", "under", "above", "below", "high", "low", "limit", "maximum", "minimum"]
+  },
+  
+  "common_filters": {
+    "active_accounts": "account_status = 'ACTIVE'",
+    "active_customers": "customer_status = 'ACTIVE'", 
+    "pending_transfers": "instruction_status IN ('PENDING', 'SCHEDULED')",
+    "completed_transfers": "instruction_status = 'COMPLETED'",
+    "recent_records": "Use database-specific date functions for recent filtering"
+  },
+  
+  "sensitive_tables": {
+    "audit_trail": "Contains sensitive audit information",
+    "error_logs": "Contains system error details", 
+    "system_parameters": "Contains system configuration"
+  },
+  
+  "test_questions": {
+    "basic": [
+      "Show me recent transfers",
+      "List active accounts", 
+      "Find all customers",
+      "Show pending payments"
+    ],
+    "advanced": [
+      "Show urgent transfers over $5000 from last month",
+      "Find customers with multiple failed transactions",
+      "List high-value transfers by priority",
+      "Show account balances grouped by type"
+    ],
+    "table_specific": [
+      "Show me customer details for urgent transfers over 10k for investment",
+      "List account balances for active customers",
+      "Find recent transactions with failed status", 
+      "Show recurring payment schedules"
+    ],
+    "error_cases": [
+      "",
+      "invalid query with no meaning xyz123",
+      "show me everything from nowhere"
+    ]
+  }
+}

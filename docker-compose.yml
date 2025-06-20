@@ -1,0 +1,39 @@
+services: 
+
+  ask-data-backend:
+    build:
+      context: .
+      dockerfile: ask-data-backend/Dockerfile
+    container_name: ask-data-backend
+    ports:
+      - "8015:8015"
+    volumes:
+      - ./ask-data-backend:/app
+    env_file:
+      - .env.backend
+    environment:
+      - PYTHONPATH=/app 
+      - REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/zscaler-root-ca.crt  
+    networks:
+      - ask-data-network
+  ask-data-frontend:
+    build:
+      context: .
+      dockerfile: ask-data-frontend/Dockerfile
+    container_name: ask-data-frontend
+    ports:
+      - "8551:8551"
+    volumes:
+      - ./ask-data-frontend:/app
+    environment:
+      - PYTHONPATH=/app
+      - REQUESTS_CA_BUNDLE=/usr/local/share/ca-certificates/zscaler-root-ca.crt 
+    env_file:
+      - .env.frontend    
+    networks:
+      - ask-data-network
+  
+  
+networks:
+  ask-data-network:
+    driver: bridge 

@@ -1,0 +1,470 @@
+-- Internal Bank Transfer Database Schema
+-- MySQL Database Design for Internal Transfer Application
+
+-- Create database
+CREATE DATABASE IF NOT EXISTS internal_transfer_db;
+USE internal_transfer_db;
+
+-- =============================================
+-- CORE ENTITIES
+-- =============================================
+
+-- Account Details Table
+CREATE TABLE account_details (
+    account_id VARCHAR(20) PRIMARY KEY,
+    account_number VARCHAR(50) NOT NULL UNIQUE,
+    account_name VARCHAR(100) NOT NULL,
+    account_type ENUM('SAVINGS', 'CURRENT', 'FIXED_DEPOSIT', 'LOAN') NOT NULL,
+    branch_code VARCHAR(10) NOT NULL,
+    branch_name VARCHAR(100) NOT NULL,
+    currency_code VARCHAR(3) DEFAULT 'USD',
+    account_status ENUM('ACTIVE', 'INACTIVE', 'SUSPENDED', 'CLOSED') DEFAULT 'ACTIVE',
+    opening_date DATE NOT NULL,
+    closing_date DATE NULL,
+    minimum_balance DECIMAL(15,2) DEFAULT 0.00,
+    available_balance DECIMAL(15,2) DEFAULT 0.00,
+    actual_balance DECIMAL(15,2) DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_account_number (account_number),
+    INDEX idx_account_status (account_status),
+    INDEX idx_branch_code (branch_code)
+);
+
+-- Customer Information Table
+CREATE TABLE customers (
+    customer_id VARCHAR(20) PRIMARY KEY,
+    customer_number VARCHAR(50) NOT NULL UNIQUE,
+    first_name VARCHAR(50) NOT NULL,
+    middle_name VARCHAR(50),
+    last_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE,
+    phone_number VARCHAR(20),
+    email VARCHAR(100),
+    address_line1 VARCHAR(200),
+    address_line2 VARCHAR(200),
+    city VARCHAR(50),
+    state VARCHAR(50),
+    postal_code VARCHAR(20),
+    country VARCHAR(50) DEFAULT 'USA',
+    customer_type ENUM('INDIVIDUAL', 'CORPORATE', 'GOVERNMENT') DEFAULT 'INDIVIDUAL',
+    customer_status ENUM('ACTIVE', 'INACTIVE', 'SUSPENDED') DEFAULT 'ACTIVE',
+    kyc_status ENUM('PENDING', 'VERIFIED', 'REJECTED') DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    INDEX idx_customer_number (customer_number),
+    INDEX idx_email (email),
+    INDEX idx_customer_status (customer_status)
+);
+
+-- Account-Customer Relationship Table
+CREATE TABLE account_holders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id VARCHAR(20) NOT NULL,
+    customer_id VARCHAR(20) NOT NULL,
+    relationship_type ENUM('PRIMARY', 'JOINT', 'AUTHORIZED_SIGNATORY') DEFAULT 'PRIMARY',
+    effective_date DATE NOT NULL,
+    end_date DATE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (account_id) REFERENCES account_details(account_id),
+    FOREIGN KEY (customer_id) REFERENCES customers(customer_id),
+    UNIQUE KEY unique_account_customer (account_id, customer_id, relationship_type),
+    INDEX idx_account_id (account_id),
+    INDEX idx_customer_id (customer_id)
+);
+
+-- =============================================
+-- PAYMENT INSTRUCTION TABLES
+-- =============================================
+
+-- Main Payment Instructions Table
+CREATE TABLE payment_instructions (
+    instruction_id VARCHAR(30) PRIMARY KEY,
+    payer_account_id VARCHAR(20) NOT NULL,
+    payee_account_id VARCHAR(20) NOT NULL,
+    instruction_type ENUM('IMMEDIATE', 'SCHEDULED', 'RECURRING') NOT NULL,
+    payment_purpose VARCHAR(200),
+    amount DECIMAL(15,2) NOT NULL,
+    currency_code VARCHAR(3) DEFAULT 'USD',
+    
+    -- Scheduling fields
+    scheduled_date DATETIME NULL,
+    execution_date DATETIME NULL,
+    
+    -- Reference and description
+    payer_reference VARCHAR(100),
+    payee_reference VARCHAR(100),
+    internal_reference VARCHAR(100),
+    narrative TEXT,
+    
+    -- Status and workflow
+    instruction_status ENUM('PENDING', 'SCHEDULED', 'PROCESSING', 'COMPLETED', 'FAILED', 'CANCELLED', 'REJECTED') DEFAULT 'PENDING',
+    priority ENUM('LOW', 'NORMAL', 'HIGH', 'URGENT') DEFAULT 'NORMAL',
+    
+    -- Maker-Checker fields
+    created_by VARCHAR(50) NOT NULL,
+    authorized_by VARCHAR(50) NULL,
+    authorization_date DATETIME NULL,
+    
+    -- Audit fields
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    processed_at DATETIME NULL,
+    
+    FOREIGN KEY (payer_account_id) REFERENCES account_details(account_id),
+    FOREIGN KEY (payee_account_id) REFERENCES account_details(account_id),
+    
+    INDEX idx_payer_account (payer_account_id),
+    INDEX idx_payee_account (payee_account_id),
+    INDEX idx_instruction_status (instruction_status),
+    INDEX idx_scheduled_date (scheduled_date),
+    INDEX idx_created_at (created_at)
+);
+
+-- Recurrence Instructions Table
+CREATE TABLE recurrence_instructions (
+    recurrence_id VARCHAR(30) PRIMARY KEY,
+    instruction_id VARCHAR(30) NOT NULL,
+    
+    -- Recurrence pattern
+    frequency_type ENUM('DAILY', 'WEEKLY', 'MONTHLY', 'QUARTERLY', 'YEARLY') NOT NULL,
+    frequency_interval INT DEFAULT 1, -- Every N days/weeks/months
+    
+    -- Weekly recurrence (if frequency_type = 'WEEKLY')
+    day_of_week ENUM('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY') NULL,
+    
+    -- Monthly recurrence (if frequency_type = 'MONTHLY')
+    day_of_month INT NULL, -- 1-31, or negative for end of month (-1 = last day)
+    
+    -- Date boundaries
+    start_date DATE NOT NULL,
+    end_date DATE NULL,
+    max_occurrences INT NULL,
+    
+    -- Status
+    recurrence_status ENUM('ACTIVE', 'PAUSED', 'COMPLETED', 'CANCELLED') DEFAULT 'ACTIVE',
+    occurrences_completed INT DEFAULT 0,
+    
+    -- Next execution
+    next_execution_date DATE NULL,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (instruction_id) REFERENCES payment_instructions(instruction_id),
+    INDEX idx_instruction_id (instruction_id),
+    INDEX idx_next_execution (next_execution_date),
+    INDEX idx_recurrence_status (recurrence_status)
+);
+
+-- =============================================
+-- TRANSACTION PROCESSING TABLES
+-- =============================================
+
+-- Transaction Log Table
+CREATE TABLE transactions (
+    transaction_id VARCHAR(30) PRIMARY KEY,
+    instruction_id VARCHAR(30) NOT NULL,
+    
+    -- Transaction details
+    transaction_type ENUM('DEBIT', 'CREDIT', 'REVERSAL') NOT NULL,
+    account_id VARCHAR(20) NOT NULL,
+    amount DECIMAL(15,2) NOT NULL,
+    currency_code VARCHAR(3) DEFAULT 'USD',
+    
+    -- Balances
+    balance_before DECIMAL(15,2),
+    balance_after DECIMAL(15,2),
+    
+    -- Reference fields
+    transaction_reference VARCHAR(100),
+    contra_account_id VARCHAR(20), -- The other account in the transfer
+    
+    -- Status and timing
+    transaction_status ENUM('PENDING', 'COMPLETED', 'FAILED', 'REVERSED') DEFAULT 'PENDING',
+    value_date DATE NOT NULL,
+    posting_date DATE NOT NULL,
+    
+    -- Audit
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    processed_by VARCHAR(50),
+    
+    FOREIGN KEY (instruction_id) REFERENCES payment_instructions(instruction_id),
+    FOREIGN KEY (account_id) REFERENCES account_details(account_id),
+    FOREIGN KEY (contra_account_id) REFERENCES account_details(account_id),
+    
+    INDEX idx_instruction_id (instruction_id),
+    INDEX idx_account_id (account_id),
+    INDEX idx_transaction_status (transaction_status),
+    INDEX idx_value_date (value_date),
+    INDEX idx_created_at (created_at)
+);
+
+-- =============================================
+-- VALIDATION AND LIMITS TABLES
+-- =============================================
+
+-- Account Limits Table
+CREATE TABLE account_limits (
+    limit_id INT AUTO_INCREMENT PRIMARY KEY,
+    account_id VARCHAR(20) NOT NULL,
+    limit_type ENUM('DAILY_DEBIT', 'DAILY_CREDIT', 'MONTHLY_DEBIT', 'MONTHLY_CREDIT', 'SINGLE_TRANSACTION') NOT NULL,
+    limit_amount DECIMAL(15,2) NOT NULL,
+    currency_code VARCHAR(3) DEFAULT 'USD',
+    effective_date DATE NOT NULL,
+    expiry_date DATE NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (account_id) REFERENCES account_details(account_id),
+    UNIQUE KEY unique_account_limit (account_id, limit_type, effective_date),
+    INDEX idx_account_id (account_id)
+);
+
+-- Beneficiary Management Table
+CREATE TABLE beneficiaries (
+    beneficiary_id VARCHAR(30) PRIMARY KEY,
+    payer_account_id VARCHAR(20) NOT NULL,
+    payee_account_id VARCHAR(20) NOT NULL,
+    beneficiary_name VARCHAR(100) NOT NULL,
+    nickname VARCHAR(50),
+    
+    -- Status and approval
+    beneficiary_status ENUM('PENDING', 'ACTIVE', 'SUSPENDED', 'DELETED') DEFAULT 'PENDING',
+    approval_required BOOLEAN DEFAULT TRUE,
+    approved_by VARCHAR(50) NULL,
+    approval_date DATETIME NULL,
+    
+    -- Usage tracking
+    last_used_date DATETIME NULL,
+    usage_count INT DEFAULT 0,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (payer_account_id) REFERENCES account_details(account_id),
+    FOREIGN KEY (payee_account_id) REFERENCES account_details(account_id),
+    
+    UNIQUE KEY unique_payer_payee (payer_account_id, payee_account_id),
+    INDEX idx_payer_account (payer_account_id),
+    INDEX idx_beneficiary_status (beneficiary_status)
+);
+
+-- =============================================
+-- AUDIT AND COMPLIANCE TABLES
+-- =============================================
+
+-- Audit Trail Table
+CREATE TABLE audit_trail (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    table_name VARCHAR(50) NOT NULL,
+    record_id VARCHAR(50) NOT NULL,
+    action_type ENUM('INSERT', 'UPDATE', 'DELETE') NOT NULL,
+    
+    -- Change details
+    old_values JSON NULL,
+    new_values JSON NULL,
+    changed_fields TEXT NULL,
+    
+    -- User and session info
+    user_id VARCHAR(50) NOT NULL,
+    session_id VARCHAR(100) NULL,
+    ip_address VARCHAR(45) NULL,
+    user_agent TEXT NULL,
+    
+    -- Timestamp
+    action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    INDEX idx_table_record (table_name, record_id),
+    INDEX idx_user_id (user_id),
+    INDEX idx_action_timestamp (action_timestamp)
+);
+
+-- Error Log Table
+CREATE TABLE error_logs (
+    error_id INT AUTO_INCREMENT PRIMARY KEY,
+    instruction_id VARCHAR(30) NULL,
+    transaction_id VARCHAR(30) NULL,
+    
+    error_code VARCHAR(20) NOT NULL,
+    error_message TEXT NOT NULL,
+    error_type ENUM('VALIDATION', 'BUSINESS_RULE', 'SYSTEM', 'EXTERNAL_API') NOT NULL,
+    
+    -- Context
+    module_name VARCHAR(50),
+    function_name VARCHAR(50),
+    stack_trace TEXT,
+    
+    -- Resolution
+    resolved BOOLEAN DEFAULT FALSE,
+    resolved_by VARCHAR(50) NULL,
+    resolved_at DATETIME NULL,
+    resolution_notes TEXT NULL,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (instruction_id) REFERENCES payment_instructions(instruction_id),
+    INDEX idx_instruction_id (instruction_id),
+    INDEX idx_error_type (error_type),
+    INDEX idx_resolved (resolved),
+    INDEX idx_created_at (created_at)
+);
+
+-- =============================================
+-- SYSTEM CONFIGURATION TABLES
+-- =============================================
+
+-- System Parameters Table
+CREATE TABLE system_parameters (
+    parameter_id INT AUTO_INCREMENT PRIMARY KEY,
+    parameter_name VARCHAR(100) NOT NULL UNIQUE,
+    parameter_value TEXT NOT NULL,
+    parameter_type ENUM('STRING', 'NUMBER', 'BOOLEAN', 'JSON') DEFAULT 'STRING',
+    description TEXT,
+    is_encrypted BOOLEAN DEFAULT FALSE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    updated_by VARCHAR(50),
+    
+    INDEX idx_parameter_name (parameter_name)
+);
+
+-- Holiday Calendar Table
+CREATE TABLE holiday_calendar (
+    holiday_id INT AUTO_INCREMENT PRIMARY KEY,
+    holiday_date DATE NOT NULL,
+    holiday_name VARCHAR(100) NOT NULL,
+    country_code VARCHAR(3) DEFAULT 'USA',
+    is_banking_holiday BOOLEAN DEFAULT TRUE,
+    
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    
+    UNIQUE KEY unique_holiday_date (holiday_date, country_code),
+    INDEX idx_holiday_date (holiday_date)
+);
+
+-- =============================================
+-- SAMPLE DATA INSERTS
+-- =============================================
+
+-- Insert sample system parameters
+INSERT INTO system_parameters (parameter_name, parameter_value, parameter_type, description) VALUES
+('MAX_DAILY_TRANSFER_LIMIT', '50000.00', 'NUMBER', 'Maximum daily transfer limit per account'),
+('TRANSFER_CUT_OFF_TIME', '15:00:00', 'STRING', 'Daily cut-off time for same-day transfers'),
+('MINIMUM_TRANSFER_AMOUNT', '1.00', 'NUMBER', 'Minimum amount for internal transfers'),
+('REQUIRE_DUAL_AUTHORIZATION', 'true', 'BOOLEAN', 'Require dual authorization for high-value transfers'),
+('HIGH_VALUE_THRESHOLD', '10000.00', 'NUMBER', 'Amount threshold requiring additional authorization');
+
+-- Insert sample holiday data
+INSERT INTO holiday_calendar (holiday_date, holiday_name, country_code) VALUES
+('2025-01-01', 'New Year Day', 'USA'),
+('2025-07-04', 'Independence Day', 'USA'),
+('2025-12-25', 'Christmas Day', 'USA');
+
+-- =============================================
+-- VIEWS FOR COMMON QUERIES
+-- =============================================
+
+-- Account Summary View
+CREATE VIEW v_account_summary AS
+SELECT 
+    ad.account_id,
+    ad.account_number,
+    ad.account_name,
+    ad.account_type,
+    ad.account_status,
+    ad.available_balance,
+    ad.currency_code,
+    c.customer_id,
+    CONCAT(c.first_name, ' ', COALESCE(c.middle_name, ''), ' ', c.last_name) as customer_name,
+    c.customer_type,
+    ah.relationship_type
+FROM account_details ad
+JOIN account_holders ah ON ad.account_id = ah.account_id
+JOIN customers c ON ah.customer_id = c.customer_id
+WHERE ah.end_date IS NULL;
+
+-- Pending Transfers View
+CREATE VIEW v_pending_transfers AS
+SELECT 
+    pi.instruction_id,
+    pi.payer_account_id,
+    pi.payee_account_id,
+    pi.amount,
+    pi.currency_code,
+    pi.scheduled_date,
+    pi.instruction_status,
+    pi.created_at,
+    payer.account_name as payer_name,
+    payee.account_name as payee_name
+FROM payment_instructions pi
+JOIN account_details payer ON pi.payer_account_id = payer.account_id
+JOIN account_details payee ON pi.payee_account_id = payee.account_id
+WHERE pi.instruction_status IN ('PENDING', 'SCHEDULED');
+
+-- Transaction History View
+CREATE VIEW v_transaction_history AS
+SELECT 
+    t.transaction_id,
+    t.instruction_id,
+    t.transaction_type,
+    t.account_id,
+    t.amount,
+    t.currency_code,
+    t.balance_after,
+    t.value_date,
+    t.transaction_status,
+    ad.account_number,
+    ad.account_name,
+    pi.payer_reference,
+    pi.payee_reference
+FROM transactions t
+JOIN account_details ad ON t.account_id = ad.account_id
+JOIN payment_instructions pi ON t.instruction_id = pi.instruction_id;
+
+-- =============================================
+-- INDEXES FOR PERFORMANCE
+-- =============================================
+
+-- Additional performance indexes
+CREATE INDEX idx_payment_instructions_composite ON payment_instructions(instruction_status, scheduled_date, created_at);
+CREATE INDEX idx_transactions_composite ON transactions(account_id, value_date, transaction_status);
+CREATE INDEX idx_recurrence_next_execution ON recurrence_instructions(recurrence_status, next_execution_date);
+
+-- =============================================
+-- TRIGGERS FOR AUDIT TRAIL
+-- =============================================
+
+-- Trigger for payment_instructions audit
+DELIMITER //
+CREATE TRIGGER tr_payment_instructions_audit
+AFTER UPDATE ON payment_instructions
+FOR EACH ROW
+BEGIN
+    INSERT INTO audit_trail (
+        table_name, record_id, action_type, 
+        old_values, new_values, user_id
+    ) VALUES (
+        'payment_instructions', 
+        NEW.instruction_id, 
+        'UPDATE',
+        JSON_OBJECT(
+            'instruction_status', OLD.instruction_status,
+            'amount', OLD.amount,
+            'updated_at', OLD.updated_at
+        ),
+        JSON_OBJECT(
+            'instruction_status', NEW.instruction_status,
+            'amount', NEW.amount,
+            'updated_at', NEW.updated_at
+        ),
+        COALESCE(NEW.authorized_by, NEW.created_by)
+    );
+END//
+DELIMITER ;

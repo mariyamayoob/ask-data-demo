@@ -1,0 +1,783 @@
+-- =============================================
+-- COMPREHENSIVE DATA LOADER
+-- Complete insert statements for 500 customers with 6 months of data
+-- =============================================
+
+USE internal_transfer_db;
+
+-- Disable constraints and checks for faster loading
+SET FOREIGN_KEY_CHECKS = 0;
+SET UNIQUE_CHECKS = 0;
+SET AUTOCOMMIT = 0;
+
+-- =============================================
+-- 1. CUSTOMERS (500 total)
+-- =============================================
+
+-- Individual Customers (400)
+INSERT INTO customers (customer_id, customer_number, first_name, middle_name, last_name, date_of_birth, phone_number, email, address_line1, address_line2, city, state, postal_code, country, customer_type, customer_status, kyc_status) VALUES
+('CUST001', 'C000000001', 'John', 'Michael', 'Smith', '1985-03-15', '+1-555-0101', 'john.smith@email.com', '123 Main St', 'Apt 4B', 'New York', 'NY', '10001', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST002', 'C000000002', 'Sarah', 'Elizabeth', 'Johnson', '1990-07-22', '+1-555-0102', 'sarah.johnson@email.com', '456 Oak Ave', NULL, 'Los Angeles', 'CA', '90210', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST003', 'C000000003', 'Michael', 'David', 'Williams', '1982-11-08', '+1-555-0103', 'michael.williams@email.com', '789 Pine Rd', 'Suite 200', 'Chicago', 'IL', '60601', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST004', 'C000000004', 'Emily', 'Rose', 'Brown', '1995-01-30', '+1-555-0104', 'emily.brown@email.com', '321 Elm St', NULL, 'Houston', 'TX', '77001', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST005', 'C000000005', 'James', 'Robert', 'Davis', '1978-09-12', '+1-555-0105', 'james.davis@email.com', '654 Maple Dr', 'Unit 15', 'Phoenix', 'AZ', '85001', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST006', 'C000000006', 'Jessica', 'Marie', 'Miller', '1992-04-18', '+1-555-0106', 'jessica.miller@email.com', '987 Cedar Ln', NULL, 'Philadelphia', 'PA', '19101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST007', 'C000000007', 'Christopher', 'Paul', 'Wilson', '1987-12-05', '+1-555-0107', 'chris.wilson@email.com', '147 Birch Ave', 'Apt 22', 'San Antonio', 'TX', '78201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST008', 'C000000008', 'Amanda', 'Nicole', 'Moore', '1989-06-25', '+1-555-0108', 'amanda.moore@email.com', '258 Spruce St', NULL, 'San Diego', 'CA', '92101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST009', 'C000000009', 'David', 'Thomas', 'Taylor', '1984-02-14', '+1-555-0109', 'david.taylor@email.com', '369 Walnut Rd', 'Floor 3', 'Dallas', 'TX', '75201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST010', 'C000000010', 'Ashley', 'Lynn', 'Anderson', '1993-10-11', '+1-555-0110', 'ashley.anderson@email.com', '741 Poplar Dr', NULL, 'San Jose', 'CA', '95101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST011', 'C000000011', 'Robert', 'James', 'Jackson', '1975-05-03', '+1-555-0111', 'robert.jackson@email.com', '852 Hickory St', 'Apt 7A', 'Austin', 'TX', '73301', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST012', 'C000000012', 'Michelle', 'Ann', 'White', '1991-08-17', '+1-555-0112', 'michelle.white@email.com', '963 Cherry Ln', NULL, 'Jacksonville', 'FL', '32099', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST013', 'C000000013', 'William', 'Charles', 'Harris', '1986-01-28', '+1-555-0113', 'william.harris@email.com', '159 Ash Ave', 'Unit 42', 'Fort Worth', 'TX', '76101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST014', 'C000000014', 'Lisa', 'Dawn', 'Martin', '1988-11-09', '+1-555-0114', 'lisa.martin@email.com', '357 Beech Dr', NULL, 'Columbus', 'OH', '43085', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST015', 'C000000015', 'Matthew', 'John', 'Thompson', '1994-03-20', '+1-555-0115', 'matthew.thompson@email.com', '486 Fir St', 'Apt 18', 'Charlotte', 'NC', '28202', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST016', 'C000000016', 'Daniel', 'Scott', 'Garcia', '1983-07-14', '+1-555-0116', 'daniel.garcia@email.com', '792 Sycamore Ave', NULL, 'Indianapolis', 'IN', '46201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST017', 'C000000017', 'Jennifer', 'Marie', 'Rodriguez', '1997-12-02', '+1-555-0117', 'jennifer.rodriguez@email.com', '634 Dogwood St', 'Apt 31', 'San Francisco', 'CA', '94102', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST018', 'C000000018', 'Kevin', 'Mark', 'Lewis', '1979-04-26', '+1-555-0118', 'kevin.lewis@email.com', '518 Redwood Dr', 'Unit 8', 'Columbus', 'OH', '43215', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST019', 'C000000019', 'Rachel', 'Christine', 'Lee', '1992-09-18', '+1-555-0119', 'rachel.lee@email.com', '826 Cedar Park Rd', NULL, 'El Paso', 'TX', '79901', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST020', 'C000000020', 'Brian', 'Patrick', 'Walker', '1986-01-07', '+1-555-0120', 'brian.walker@email.com', '459 Pine Valley Ln', 'Floor 2', 'Memphis', 'TN', '38103', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST021', 'C000000021', 'Stephanie', 'Rose', 'Hall', '1990-11-23', '+1-555-0121', 'stephanie.hall@email.com', '371 Oak Hill Dr', NULL, 'Boston', 'MA', '02108', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST022', 'C000000022', 'Gregory', 'Alan', 'Allen', '1985-06-11', '+1-555-0122', 'gregory.allen@email.com', '695 Maple Ridge Ct', 'Apt 15', 'Nashville', 'TN', '37201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST023', 'C000000023', 'Nicole', 'Elizabeth', 'Young', '1988-03-29', '+1-555-0123', 'nicole.young@email.com', '147 Birch Grove Ave', NULL, 'Denver', 'CO', '80202', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST024', 'C000000024', 'Jason', 'Michael', 'Hernandez', '1994-08-15', '+1-555-0124', 'jason.hernandez@email.com', '283 Elm Creek Rd', 'Suite 120', 'Milwaukee', 'WI', '53202', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST025', 'C000000025', 'Laura', 'Anne', 'King', '1981-12-04', '+1-555-0125', 'laura.king@email.com', '738 Willow Springs Dr', NULL, 'Portland', 'OR', '97201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST026', 'C000000026', 'Ryan', 'Joseph', 'Wright', '1993-05-22', '+1-555-0126', 'ryan.wright@email.com', '562 Spruce Meadow Ln', 'Apt 7C', 'Las Vegas', 'NV', '89101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST027', 'C000000027', 'Melissa', 'Dawn', 'Lopez', '1987-10-08', '+1-555-0127', 'melissa.lopez@email.com', '419 Chestnut Valley Rd', NULL, 'Oklahoma City', 'OK', '73102', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST028', 'C000000028', 'Brandon', 'Lee', 'Hill', '1982-02-17', '+1-555-0128', 'brandon.hill@email.com', '756 Hickory Heights Ave', 'Unit 22', 'Albuquerque', 'NM', '87102', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST029', 'C000000029', 'Kimberly', 'Sue', 'Scott', '1995-07-03', '+1-555-0129', 'kimberly.scott@email.com', '634 Poplar Point Dr', NULL, 'Tucson', 'AZ', '85701', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST030', 'C000000030', 'Eric', 'Daniel', 'Green', '1984-11-19', '+1-555-0130', 'eric.green@email.com', '891 Ash Creek Ct', 'Floor 1', 'Fresno', 'CA', '93701', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST031', 'C000000031', 'Angela', 'Faith', 'Adams', '1989-04-14', '+1-555-0131', 'angela.adams@email.com', '147 Magnolia Blvd', NULL, 'Sacramento', 'CA', '94203', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST032', 'C000000032', 'Mark', 'Steven', 'Baker', '1976-12-30', '+1-555-0132', 'mark.baker@email.com', '258 Cypress Ave', 'Apt 9B', 'Kansas City', 'MO', '64108', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST033', 'C000000033', 'Samantha', 'Joy', 'Gonzalez', '1996-06-08', '+1-555-0133', 'samantha.gonzalez@email.com', '369 Palm Tree Dr', NULL, 'Mesa', 'AZ', '85201', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST034', 'C000000034', 'Timothy', 'Wayne', 'Nelson', '1981-09-27', '+1-555-0134', 'timothy.nelson@email.com', '741 Dogwood Ct', 'Unit 6', 'Virginia Beach', 'VA', '23451', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST035', 'C000000035', 'Heather', 'Michelle', 'Carter', '1990-02-19', '+1-555-0135', 'heather.carter@email.com', '852 Willow Creek Rd', NULL, 'Atlanta', 'GA', '30309', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST036', 'C000000036', 'Andrew', 'Francis', 'Mitchell', '1985-08-04', '+1-555-0136', 'andrew.mitchell@email.com', '963 Oakmont Dr', 'Apt 12', 'Colorado Springs', 'CO', '80903', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST037', 'C000000037', 'Rebecca', 'Grace', 'Perez', '1992-01-25', '+1-555-0137', 'rebecca.perez@email.com', '159 Sunset Blvd', NULL, 'Raleigh', 'NC', '27601', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST038', 'C000000038', 'Joseph', 'Anthony', 'Roberts', '1977-10-16', '+1-555-0138', 'joseph.roberts@email.com', '357 Riverside Dr', 'Suite 8', 'Omaha', 'NE', '68102', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST039', 'C000000039', 'Amy', 'Renee', 'Turner', '1994-05-13', '+1-555-0139', 'amy.turner@email.com', '486 Highland Ave', NULL, 'Miami', 'FL', '33101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST040', 'C000000040', 'Steven', 'Ray', 'Phillips', '1983-03-07', '+1-555-0140', 'steven.phillips@email.com', '792 Meadowbrook Ln', 'Apt 5C', 'Oakland', 'CA', '94601', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST041', 'C000000041', 'Megan', 'Leigh', 'Campbell', '1991-11-01', '+1-555-0141', 'megan.campbell@email.com', '634 Evergreen St', NULL, 'Minneapolis', 'MN', '55401', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST042', 'C000000042', 'Jonathan', 'Lee', 'Parker', '1979-07-18', '+1-555-0142', 'jonathan.parker@email.com', '518 Redbird Ln', 'Unit 14', 'Tulsa', 'OK', '74103', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST043', 'C000000043', 'Stephanie', 'Nicole', 'Evans', '1987-04-06', '+1-555-0143', 'stephanie.evans@email.com', '826 Bluebird Dr', NULL, 'Wichita', 'KS', '67202', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST044', 'C000000044', 'Kenneth', 'Dale', 'Edwards', '1974-12-23', '+1-555-0144', 'kenneth.edwards@email.com', '459 Cardinal Ave', 'Apt 11', 'New Orleans', 'LA', '70112', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST045', 'C000000045', 'Rachel', 'Anne', 'Collins', '1995-09-10', '+1-555-0145', 'rachel.collins@email.com', '371 Robin Rd', NULL, 'Cleveland', 'OH', '44113', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST046', 'C000000046', 'Scott', 'Michael', 'Stewart', '1982-06-02', '+1-555-0146', 'scott.stewart@email.com', '695 Sparrow St', 'Suite 3', 'Tampa', 'FL', '33602', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST047', 'C000000047', 'Christina', 'Marie', 'Sanchez', '1988-01-28', '+1-555-0147', 'christina.sanchez@email.com', '147 Falcon Dr', NULL, 'Aurora', 'CO', '80012', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST048', 'C000000048', 'Patrick', 'James', 'Morris', '1976-10-15', '+1-555-0148', 'patrick.morris@email.com', '283 Eagle Ave', 'Apt 7', 'Santa Ana', 'CA', '92701', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST049', 'C000000049', 'Tiffany', 'Rose', 'Rogers', '1993-03-12', '+1-555-0149', 'tiffany.rogers@email.com', '738 Hawk Ln', NULL, 'St. Louis', 'MO', '63101', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED'),
+('CUST050', 'C000000050', 'Jason', 'Robert', 'Reed', '1980-08-29', '+1-555-0150', 'jason.reed@email.com', '562 Owl Ct', 'Unit 2', 'Pittsburgh', 'PA', '15222', 'USA', 'INDIVIDUAL', 'ACTIVE', 'VERIFIED');
+
+-- Continue with customers 51-400 (abbreviated for space, but pattern continues)
+-- For demo purposes, I'll add key customers and then use a procedure for the rest
+
+-- Corporate Customers (80)
+INSERT INTO customers (customer_id, customer_number, first_name, middle_name, last_name, date_of_birth, phone_number, email, address_line1, address_line2, city, state, postal_code, country, customer_type, customer_status, kyc_status) VALUES
+('CORP001', 'C000000401', 'TechCorp', NULL, 'Solutions', '2015-03-01', '+1-555-0401', 'finance@techcorp.com', '1000 Business Plaza', 'Floor 15', 'Seattle', 'WA', '98101', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP002', 'C000000402', 'Global', NULL, 'Manufacturing', '2010-06-15', '+1-555-0402', 'accounts@globalmanuf.com', '2500 Industrial Blvd', NULL, 'Detroit', 'MI', '48201', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP003', 'C000000403', 'Metro', NULL, 'Retail', '2018-09-22', '+1-555-0403', 'treasury@metroretail.com', '750 Commerce St', 'Suite 500', 'Atlanta', 'GA', '30309', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP004', 'C000000404', 'Pacific', NULL, 'Logistics', '2012-12-08', '+1-555-0404', 'finance@pacificlog.com', '3200 Harbor Dr', NULL, 'Long Beach', 'CA', '90802', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP005', 'C000000405', 'Elite', NULL, 'Consulting', '2020-01-15', '+1-555-0405', 'billing@eliteconsult.com', '4700 Executive Way', 'Tower B', 'Boston', 'MA', '02101', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP006', 'C000000406', 'Horizon', NULL, 'Financial', '2016-05-20', '+1-555-0406', 'operations@horizonfinancial.com', '5500 Financial Plaza', 'Tower A', 'Charlotte', 'NC', '28202', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP007', 'C000000407', 'Velocity', NULL, 'Logistics', '2019-08-12', '+1-555-0407', 'billing@velocitylog.com', '6200 Transport Way', NULL, 'Memphis', 'TN', '38118', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP008', 'C000000408', 'Pinnacle', NULL, 'Healthcare', '2017-03-08', '+1-555-0408', 'finance@pinnaclehealth.com', '7800 Medical Center Dr', 'Building C', 'Houston', 'TX', '77030', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP009', 'C000000409', 'Summit', NULL, 'Construction', '2011-09-30', '+1-555-0409', 'accounting@summitbuild.com', '8900 Industrial Blvd', NULL, 'Phoenix', 'AZ', '85034', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED'),
+('CORP010', 'C000000410', 'Genesis', NULL, 'Energy', '2014-12-15', '+1-555-0410', 'treasury@genesisenergy.com', '9100 Energy Corridor', 'Suite 1500', 'Houston', 'TX', '77079', 'USA', 'CORPORATE', 'ACTIVE', 'VERIFIED');
+
+-- Government Entities (20)
+INSERT INTO customers (customer_id, customer_number, first_name, middle_name, last_name, date_of_birth, phone_number, email, address_line1, address_line2, city, state, postal_code, country, customer_type, customer_status, kyc_status) VALUES
+('GOV001', 'C000000481', 'City of', NULL, 'Springfield', '1900-01-01', '+1-555-0481', 'treasury@springfield.gov', '100 City Hall Plaza', NULL, 'Springfield', 'IL', '62701', 'USA', 'GOVERNMENT', 'ACTIVE', 'VERIFIED'),
+('GOV002', 'C000000482', 'Springfield', NULL, 'School District', '1950-07-01', '+1-555-0482', 'finance@ssd.edu', '200 Education Blvd', NULL, 'Springfield', 'IL', '62702', 'USA', 'GOVERNMENT', 'ACTIVE', 'VERIFIED'),
+('GOV003', 'C000000483', 'County of', NULL, 'Madison', '1850-03-15', '+1-555-0483', 'comptroller@madison.gov', '300 Government Center', NULL, 'Madison', 'WI', '53703', 'USA', 'GOVERNMENT', 'ACTIVE', 'VERIFIED'),
+('GOV004', 'C000000484', 'State of', NULL, 'Illinois', '1818-12-03', '+1-555-0484', 'treasury@illinois.gov', '400 State Capitol', NULL, 'Springfield', 'IL', '62706', 'USA', 'GOVERNMENT', 'ACTIVE', 'VERIFIED'),
+('GOV005', 'C000000485', 'Metro', NULL, 'Transit Authority', '1975-06-20', '+1-555-0485', 'finance@metrota.gov', '500 Transit Plaza', 'Level 3', 'Chicago', 'IL', '60606', 'USA', 'GOVERNMENT', 'ACTIVE', 'VERIFIED');
+
+-- =============================================
+-- 2. PROCEDURE TO GENERATE REMAINING CUSTOMERS
+-- =============================================
+
+DELIMITER //
+CREATE PROCEDURE LoadRemainingCustomers()
+BEGIN
+    DECLARE i INT DEFAULT 51;
+    
+    -- Generate remaining individual customers (51-400)
+    WHILE i <= 400 DO
+        INSERT INTO customers (
+            customer_id, customer_number, first_name, middle_name, last_name, 
+            date_of_birth, phone_number, email, address_line1, city, state, 
+            postal_code, country, customer_type, customer_status, kyc_status
+        ) VALUES (
+            CONCAT('CUST', LPAD(i, 3, '0')),
+            CONCAT('C', LPAD(i, 9, '0')),
+            ELT(((i-1) % 20) + 1, 'John', 'Sarah', 'Michael', 'Emily', 'James', 'Jessica', 'Christopher', 'Amanda', 'David', 'Ashley', 'Robert', 'Michelle', 'William', 'Lisa', 'Matthew', 'Jennifer', 'Daniel', 'Rachel', 'Kevin', 'Nicole'),
+            ELT(((i-1) % 10) + 1, 'Michael', 'Elizabeth', 'David', 'Rose', 'Robert', 'Marie', 'Paul', 'Nicole', 'Thomas', 'Lynn'),
+            ELT(((i-1) % 15) + 1, 'Smith', 'Johnson', 'Williams', 'Brown', 'Davis', 'Miller', 'Wilson', 'Moore', 'Taylor', 'Anderson', 'Jackson', 'White', 'Harris', 'Martin', 'Thompson'),
+            DATE_SUB('2000-01-01', INTERVAL FLOOR(RAND() * 7300) DAY),
+            CONCAT('+1-555-', LPAD(i, 4, '0')),
+            CONCAT('user', i, '@email.com'),
+            CONCAT(FLOOR(RAND() * 9999) + 100, ' ', ELT(FLOOR(RAND() * 10) + 1, 'Main St', 'Oak Ave', 'Pine Rd', 'Elm St', 'Maple Dr', 'Cedar Ln', 'Birch Ave', 'Spruce St', 'Walnut Rd', 'Poplar Dr')),
+            ELT(((i-1) % 20) + 1, 'New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose', 'Austin', 'Jacksonville', 'Fort Worth', 'Columbus', 'Charlotte', 'Seattle', 'Denver', 'El Paso', 'Detroit', 'Boston'),
+            ELT(((i-1) % 10) + 1, 'NY', 'CA', 'IL', 'TX', 'AZ', 'PA', 'FL', 'OH', 'NC', 'WA'),
+            CONCAT(LPAD(FLOOR(RAND() * 99999), 5, '0')),
+            'USA',
+            'INDIVIDUAL',
+            'ACTIVE',
+            'VERIFIED'
+        );
+        SET i = i + 1;
+    END WHILE;
+    
+    -- Generate remaining corporate customers (11-80)
+    SET i = 11;
+    WHILE i <= 80 DO
+        INSERT INTO customers (
+            customer_id, customer_number, first_name, middle_name, last_name, 
+            date_of_birth, phone_number, email, address_line1, city, state, 
+            postal_code, country, customer_type, customer_status, kyc_status
+        ) VALUES (
+            CONCAT('CORP', LPAD(i, 3, '0')),
+            CONCAT('C', LPAD(i + 400, 9, '0')),
+            ELT(((i-1) % 15) + 1, 'TechCorp', 'Global', 'Metro', 'Pacific', 'Elite', 'Horizon', 'Velocity', 'Pinnacle', 'Summit', 'Genesis', 'Dynamic', 'Premier', 'Strategic', 'Advanced', 'Innovative'),
+            NULL,
+            ELT(((i-1) % 10) + 1, 'Solutions', 'Manufacturing', 'Retail', 'Logistics', 'Consulting', 'Financial', 'Healthcare', 'Construction', 'Energy', 'Services'),
+            DATE_SUB('2020-01-01', INTERVAL FLOOR(RAND() * 3650) DAY),
+            CONCAT('+1-555-', LPAD(i + 400, 4, '0')),
+            CONCAT('finance@corp', i, '.com'),
+            CONCAT(FLOOR(RAND() * 9999) + 1000, ' Business Plaza'),
+            ELT(((i-1) % 15) + 1, 'Seattle', 'Detroit', 'Atlanta', 'Boston', 'Chicago', 'Houston', 'Dallas', 'Phoenix', 'Denver', 'Miami', 'Portland', 'Austin', 'Nashville', 'Charlotte', 'Tampa'),
+            ELT(((i-1) % 10) + 1, 'WA', 'MI', 'GA', 'MA', 'IL', 'TX', 'CO', 'AZ', 'FL', 'OR'),
+            CONCAT(LPAD(FLOOR(RAND() * 99999), 5, '0')),
+            'USA',
+            'CORPORATE',
+            'ACTIVE',
+            'VERIFIED'
+        );
+        SET i = i + 1;
+    END WHILE;
+    
+    -- Generate remaining government customers (6-20)
+    SET i = 6;
+    WHILE i <= 20 DO
+        INSERT INTO customers (
+            customer_id, customer_number, first_name, middle_name, last_name, 
+            date_of_birth, phone_number, email, address_line1, city, state, 
+            postal_code, country, customer_type, customer_status, kyc_status
+        ) VALUES (
+            CONCAT('GOV', LPAD(i, 3, '0')),
+            CONCAT('C', LPAD(i + 480, 9, '0')),
+            ELT(((i-1) % 10) + 1, 'City of', 'County of', 'State of', 'Department of', 'University of', 'School District', 'Transit Authority', 'Housing Authority', 'Water District', 'Fire District'),
+            NULL,
+            ELT(((i-1) % 10) + 1, 'Springfield', 'Madison', 'Jefferson', 'Washington', 'Lincoln', 'Franklin', 'Monroe', 'Jackson', 'Adams', 'Wilson'),
+            '1900-01-01',
+            CONCAT('+1-555-', LPAD(i + 480, 4, '0')),
+            CONCAT('finance@gov', i, '.gov'),
+            CONCAT(FLOOR(RAND() * 999) + 100, ' Government Center'),
+            ELT(((i-1) % 10) + 1, 'Springfield', 'Madison', 'Jefferson', 'Washington', 'Lincoln', 'Franklin', 'Monroe', 'Jackson', 'Adams', 'Wilson'),
+            ELT(((i-1) % 5) + 1, 'IL', 'WI', 'MO', 'WA', 'NE'),
+            CONCAT(LPAD(FLOOR(RAND() * 99999), 5, '0')),
+            'USA',
+            'GOVERNMENT',
+            'ACTIVE',
+            'VERIFIED'
+        );
+        SET i = i + 1;
+    END WHILE;
+END //
+DELIMITER ;
+
+-- Execute customer loading
+CALL LoadRemainingCustomers();
+DROP PROCEDURE LoadRemainingCustomers;
+
+-- =============================================
+-- 3. ACCOUNT DETAILS
+-- =============================================
+
+-- Sample accounts for first 50 customers
+INSERT INTO account_details (account_id, account_number, account_name, account_type, branch_code, branch_name, currency_code, account_status, opening_date, minimum_balance, available_balance, actual_balance) VALUES
+('CUST001001', '1001234567890', 'John Michael Smith - Primary Checking', 'CURRENT', 'BR001', 'Manhattan Main Branch', 'USD', 'ACTIVE', '2020-03-15', 100.00, 15750.50, 15750.50),
+('CUST001002', '1001234567891', 'John Michael Smith - Savings', 'SAVINGS', 'BR001', 'Manhattan Main Branch', 'USD', 'ACTIVE', '2020-03-15', 500.00, 45200.75, 45200.75),
+('CUST002001', '1002345678901', 'Sarah Elizabeth Johnson - Checking', 'CURRENT', 'BR002', 'Beverly Hills Branch', 'USD', 'ACTIVE', '2021-07-22', 100.00, 8932.25, 8932.25),
+('CUST002002', '1002345678902', 'Sarah Elizabeth Johnson - Savings', 'SAVINGS', 'BR002', 'Beverly Hills Branch', 'USD', 'ACTIVE', '2021-07-22', 500.00, 32150.00, 32150.00),
+('CUST003001', '1003456789012', 'Michael David Williams - Business Checking', 'CURRENT', 'BR003', 'Chicago Loop Branch', 'USD', 'ACTIVE', '2019-11-08', 250.00, 22575.80, 22575.80),
+('CUST003002', '1003456789013', 'Michael David Williams - Money Market', 'SAVINGS', 'BR003', 'Chicago Loop Branch', 'USD', 'ACTIVE', '2019-11-08', 1000.00, 67890.45, 67890.45),
+('CUST004001', '1004567890123', 'Emily Rose Brown - Student Checking', 'CURRENT', 'BR004', 'Houston Downtown Branch', 'USD', 'ACTIVE', '2022-01-30', 25.00, 3247.60, 3247.60),
+('CUST004002', '1004567890124', 'Emily Rose Brown - Savings', 'SAVINGS', 'BR004', 'Houston Downtown Branch', 'USD', 'ACTIVE', '2022-01-30', 100.00, 12500.00, 12500.00),
+('CUST005001', '1005678901234', 'James Robert Davis - Executive Checking', 'CURRENT', 'BR005', 'Phoenix Central Branch', 'USD', 'ACTIVE', '2018-09-12', 500.00, 78456.20, 78456.20),
+('CUST005002', '1005678901235', 'James Robert Davis - Investment Savings', 'SAVINGS', 'BR005', 'Phoenix Central Branch', 'USD', 'ACTIVE', '2018-09-12', 2500.00, 125750.85, 125750.85),
+('CUST006001', '1006789012345', 'Jessica Marie Miller - Checking', 'CURRENT', 'BR006', 'Philadelphia Center Branch', 'USD', 'ACTIVE', '2020-04-18', 100.00, 11234.50, 11234.50),
+('CUST006002', '1006789012346', 'Jessica Marie Miller - High Yield Savings', 'SAVINGS', 'BR006', 'Philadelphia Center Branch', 'USD', 'ACTIVE', '2020-04-18', 500.00, 28900.75, 28900.75),
+('CUST007001', '1007890123456', 'Christopher Paul Wilson - Checking', 'CURRENT', 'BR007', 'San Antonio Riverwalk Branch', 'USD', 'ACTIVE', '2021-12-05', 100.00, 9876.40, 9876.40),
+('CUST007002', '1007890123457', 'Christopher Paul Wilson - Savings', 'SAVINGS', 'BR007', 'San Antonio Riverwalk Branch', 'USD', 'ACTIVE', '2021-12-05', 500.00, 18765.30, 18765.30),
+('CUST008001', '1008901234567', 'Amanda Nicole Moore - Premium Checking', 'CURRENT', 'BR008', 'San Diego Gaslamp Branch', 'USD', 'ACTIVE', '2020-06-25', 200.00, 16543.80, 16543.80),
+('CUST008002', '1008901234568', 'Amanda Nicole Moore - Certificate Savings', 'SAVINGS', 'BR008', 'San Diego Gaslamp Branch', 'USD', 'ACTIVE', '2020-06-25', 1000.00, 35420.65, 35420.65),
+('CUST009001', '1009012345678', 'David Thomas Taylor - Business Checking', 'CURRENT', 'BR009', 'Dallas Financial District Branch', 'USD', 'ACTIVE', '2019-02-14', 300.00, 42187.90, 42187.90),
+('CUST009002', '1009012345679', 'David Thomas Taylor - Business Savings', 'SAVINGS', 'BR009', 'Dallas Financial District Branch', 'USD', 'ACTIVE', '2019-02-14', 1500.00, 89432.15, 89432.15),
+('CUST010001', '1010123456789', 'Ashley Lynn Anderson - Young Professional Checking', 'CURRENT', 'BR010', 'San Jose Tech Branch', 'USD', 'ACTIVE', '2022-10-11', 50.00, 7654.20, 7654.20),
+('CUST010002', '1010123456790', 'Ashley Lynn Anderson - Growth Savings', 'SAVINGS', 'BR010', 'San Jose Tech Branch', 'USD', 'ACTIVE', '2022-10-11', 250.00, 23456.85, 23456.85),
+('CORP001001', '2001000000001', 'TechCorp Solutions - Operating Account', 'CURRENT', 'BR011', 'Seattle Business Center', 'USD', 'ACTIVE', '2015-03-01', 5000.00, 1250000.00, 1250000.00),
+('CORP001002', '2001000000002', 'TechCorp Solutions - Payroll Account', 'CURRENT', 'BR011', 'Seattle Business Center', 'USD', 'ACTIVE', '2015-03-01', 2500.00, 485000.00, 485000.00),
+('CORP001003', '2001000000003', 'TechCorp Solutions - Investment Account', 'SAVINGS', 'BR011', 'Seattle Business Center', 'USD', 'ACTIVE', '2015-03-01', 25000.00, 2750000.00, 2750000.00),
+('CORP002001', '2002000000001', 'Global Manufacturing - Main Operating', 'CURRENT', 'BR012', 'Detroit Industrial Branch', 'USD', 'ACTIVE', '2010-06-15', 10000.00, 875000.00, 875000.00),
+('CORP002002', '2002000000002', 'Global Manufacturing - Equipment Reserve', 'SAVINGS', 'BR012', 'Detroit Industrial Branch', 'USD', 'ACTIVE', '2010-06-15', 50000.00, 1500000.00, 1500000.00),
+('GOV001001', '3001000000001', 'City of Springfield - General Fund', 'CURRENT', 'BR013', 'Springfield Government Center', 'USD', 'ACTIVE', '2000-01-01', 10000.00, 2500000.00, 2500000.00),
+('GOV001002', '3001000000002', 'City of Springfield - Capital Projects', 'SAVINGS', 'BR013', 'Springfield Government Center', 'USD', 'ACTIVE', '2000-01-01', 50000.00, 5000000.00, 5000000.00);
+
+-- =============================================
+-- 4. PROCEDURE TO GENERATE ALL REMAINING ACCOUNTS
+-- =============================================
+
+DELIMITER //
+CREATE PROCEDURE LoadAllAccounts()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE customer_id_val VARCHAR(20);
+    DECLARE customer_type_val VARCHAR(20);
+    DECLARE balance_checking DECIMAL(15,2);
+    DECLARE balance_savings DECIMAL(15,2);
+    DECLARE customer_cursor CURSOR FOR 
+        SELECT customer_id, customer_type FROM customers 
+        WHERE customer_id NOT IN (SELECT DISTINCT SUBSTRING(account_id, 1, LOCATE('0', account_id) - 1) FROM account_details WHERE account_id REGEXP '^[A-Z]{4}[0-9]');
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN customer_cursor;
+    
+    customer_loop: LOOP
+        FETCH customer_cursor INTO customer_id_val, customer_type_val;
+        IF done THEN
+            LEAVE customer_loop;
+        END IF;
+        
+        -- Set balance ranges based on customer type
+        IF customer_type_val = 'INDIVIDUAL' THEN
+            SET balance_checking = ROUND(RAND() * 50000 + 1000, 2);
+            SET balance_savings = ROUND(RAND() * 100000 + 5000, 2);
+        ELSEIF customer_type_val = 'CORPORATE' THEN
+            SET balance_checking = ROUND(RAND() * 2000000 + 100000, 2);
+            SET balance_savings = ROUND(RAND() * 5000000 + 500000, 2);
+        ELSE -- GOVERNMENT
+            SET balance_checking = ROUND(RAND() * 10000000 + 1000000, 2);
+            SET balance_savings = ROUND(RAND() * 20000000 + 2000000, 2);
+        END IF;
+        
+        -- Create primary checking account
+        INSERT INTO account_details (
+            account_id, account_number, account_name, account_type, branch_code, branch_name,
+            currency_code, account_status, opening_date, minimum_balance, 
+            available_balance, actual_balance
+        ) VALUES (
+            CONCAT(customer_id_val, '001'),
+            CONCAT(
+                CASE 
+                    WHEN customer_type_val = 'INDIVIDUAL' THEN '1'
+                    WHEN customer_type_val = 'CORPORATE' THEN '2' 
+                    ELSE '3' 
+                END,
+                LPAD(SUBSTRING(customer_id_val, -3), 12, '0'), '1'
+            ),
+            CONCAT((SELECT CONCAT(COALESCE(first_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(last_name, '')) FROM customers WHERE customer_id = customer_id_val), ' - Primary Account'),
+            'CURRENT',
+            CONCAT('BR', LPAD(FLOOR(RAND() * 50) + 1, 3, '0')),
+            CONCAT('Branch ', FLOOR(RAND() * 50) + 1),
+            'USD',
+            'ACTIVE',
+            DATE_SUB('2024-12-18', INTERVAL FLOOR(RAND() * 1095) DAY),
+            IF(customer_type_val = 'INDIVIDUAL', 100.00, IF(customer_type_val = 'CORPORATE', 1000.00, 5000.00)),
+            balance_checking,
+            balance_checking
+        );
+        
+        -- 80% chance of having a savings account
+        IF RAND() > 0.2 THEN
+            INSERT INTO account_details (
+                account_id, account_number, account_name, account_type, branch_code, branch_name,
+                currency_code, account_status, opening_date, minimum_balance, 
+                available_balance, actual_balance
+            ) VALUES (
+                CONCAT(customer_id_val, '002'),
+                CONCAT(
+                    CASE 
+                        WHEN customer_type_val = 'INDIVIDUAL' THEN '1'
+                        WHEN customer_type_val = 'CORPORATE' THEN '2' 
+                        ELSE '3' 
+                    END,
+                    LPAD(SUBSTRING(customer_id_val, -3), 12, '0'), '2'
+                ),
+                CONCAT((SELECT CONCAT(COALESCE(first_name, ''), ' ', COALESCE(middle_name, ''), ' ', COALESCE(last_name, '')) FROM customers WHERE customer_id = customer_id_val), ' - Savings Account'),
+                'SAVINGS',
+                CONCAT('BR', LPAD(FLOOR(RAND() * 50) + 1, 3, '0')),
+                CONCAT('Branch ', FLOOR(RAND() * 50) + 1),
+                'USD',
+                'ACTIVE',
+                DATE_SUB('2024-12-18', INTERVAL FLOOR(RAND() * 1095) DAY),
+                IF(customer_type_val = 'INDIVIDUAL', 500.00, IF(customer_type_val = 'CORPORATE', 5000.00, 25000.00)),
+                balance_savings,
+                balance_savings
+            );
+        END IF;
+    END LOOP;
+    
+    CLOSE customer_cursor;
+END //
+DELIMITER ;
+
+-- Execute account loading
+CALL LoadAllAccounts();
+DROP PROCEDURE LoadAllAccounts;
+
+-- =============================================
+-- 5. ACCOUNT HOLDERS RELATIONSHIPS
+-- =============================================
+
+INSERT INTO account_holders (account_id, customer_id, relationship_type, effective_date)
+SELECT 
+    account_id,
+    CASE 
+        WHEN account_id LIKE 'CUST%' THEN SUBSTRING(account_id, 1, 7)
+        WHEN account_id LIKE 'CORP%' THEN SUBSTRING(account_id, 1, 7)
+        WHEN account_id LIKE 'GOV%' THEN SUBSTRING(account_id, 1, 6)
+    END as customer_id,
+    'PRIMARY' as relationship_type,
+    opening_date as effective_date
+FROM account_details;
+
+-- =============================================
+-- 6. ACCOUNT LIMITS
+-- =============================================
+
+INSERT INTO account_limits (account_id, limit_type, limit_amount, currency_code, effective_date, is_active)
+SELECT 
+    account_id,
+    'DAILY_DEBIT',
+    CASE 
+        WHEN account_id LIKE 'CUST%' THEN 5000.00
+        WHEN account_id LIKE 'CORP%' THEN 100000.00
+        WHEN account_id LIKE 'GOV%' THEN 500000.00
+        ELSE 5000.00
+    END,
+    'USD',
+    opening_date,
+    TRUE
+FROM account_details;
+
+INSERT INTO account_limits (account_id, limit_type, limit_amount, currency_code, effective_date, is_active)
+SELECT 
+    account_id,
+    'SINGLE_TRANSACTION',
+    CASE 
+        WHEN account_id LIKE 'CUST%' THEN 2500.00
+        WHEN account_id LIKE 'CORP%' THEN 50000.00
+        WHEN account_id LIKE 'GOV%' THEN 250000.00
+        ELSE 2500.00
+    END,
+    'USD',
+    opening_date,
+    TRUE
+FROM account_details;
+
+-- =============================================
+-- 7. PAYMENT INSTRUCTIONS AND TRANSACTIONS (SAMPLE)
+-- =============================================
+
+-- Sample payment instructions for December 2024
+INSERT INTO payment_instructions (instruction_id, payer_account_id, payee_account_id, instruction_type, payment_purpose, amount, currency_code, scheduled_date, execution_date, payer_reference, payee_reference, internal_reference, narrative, instruction_status, priority, created_by, authorized_by, authorization_date, created_at, processed_at) VALUES
+('PI2024120001', 'CUST001001', 'CUST002001', 'IMMEDIATE', 'Personal Transfer', 500.00, 'USD', NULL, '2024-12-18 10:15:00', 'REF001', 'GIFT001', 'INT001', 'Birthday gift for Sarah', 'COMPLETED', 'NORMAL', 'USER001', 'ADMIN001', '2024-12-18 10:20:00', '2024-12-18 10:15:00', '2024-12-18 10:25:00'),
+('PI2024120002', 'CUST002001', 'CUST001001', 'IMMEDIATE', 'Loan Repayment', 750.00, 'USD', NULL, '2024-12-17 14:30:00', 'REF002', 'LOAN001', 'INT002', 'Repaying dinner loan', 'COMPLETED', 'NORMAL', 'USER002', 'ADMIN002', '2024-12-17 14:35:00', '2024-12-17 14:30:00', '2024-12-17 14:40:00'),
+('PI2024120003', 'CUST003001', 'CUST006001', 'SCHEDULED', 'Business Payment', 2500.00, 'USD', '2024-12-20 09:00:00', '2024-12-20 09:00:00', 'REF003', 'INV001', 'INT003', 'Invoice payment for consulting services', 'COMPLETED', 'HIGH', 'USER003', 'ADMIN003', '2024-12-16 16:45:00', '2024-12-16 16:45:00', '2024-12-20 09:05:00'),
+('PI2024120004', 'CUST005001', 'CUST009001', 'IMMEDIATE', 'Investment Transfer', 15000.00, 'USD', NULL, '2024-12-15 11:20:00', 'REF004', 'INV002', 'INT004', 'Investment opportunity funding', 'COMPLETED', 'HIGH', 'USER005', 'ADMIN005', '2024-12-15 11:25:00', '2024-12-15 11:20:00', '2024-12-15 11:30:00'),
+('PI2024120005', 'CUST004001', 'CUST008001', 'IMMEDIATE', 'Rent Split', 1200.00, 'USD', NULL, '2024-12-14 16:45:00', 'REF005', 'RENT001', 'INT005', 'December rent payment split', 'COMPLETED', 'NORMAL', 'USER004', 'ADMIN004', '2024-12-14 16:50:00', '2024-12-14 16:45:00', '2024-12-14 16:55:00'),
+('PI2024120006', 'CORP001001', 'CORP001002', 'SCHEDULED', 'Payroll Transfer', 125000.00, 'USD', '2024-12-13 08:00:00', '2024-12-13 08:00:00', 'PAYROLL001', 'SAL001', 'INT006', 'Bi-weekly payroll transfer', 'COMPLETED', 'HIGH', 'CORP001', 'ADMIN006', '2024-12-12 15:30:00', '2024-12-12 15:30:00', '2024-12-13 08:05:00'),
+('PI2024120007', 'CUST007001', 'CUST001001', 'IMMEDIATE', 'Debt Settlement', 850.00, 'USD', NULL, '2024-12-12 13:15:00', 'REF007', 'DEBT001', 'INT007', 'Settling outstanding debt', 'COMPLETED', 'NORMAL', 'USER007', 'ADMIN007', '2024-12-12 13:20:00', '2024-12-12 13:15:00', '2024-12-12 13:25:00'),
+('PI2024120008', 'CUST008001', 'CUST010001', 'IMMEDIATE', 'Gift Transfer', 300.00, 'USD', NULL, '2024-12-11 10:30:00', 'REF008', 'GIFT002', 'INT008', 'Christmas gift for Ashley', 'COMPLETED', 'NORMAL', 'USER008', 'ADMIN008', '2024-12-11 10:35:00', '2024-12-11 10:30:00', '2024-12-11 10:40:00'),
+('PI2024120009', 'CUST010001', 'CUST006001', 'IMMEDIATE', 'Service Payment', 450.00, 'USD', NULL, '2024-12-10 15:45:00', 'REF009', 'SVC001', 'INT009', 'Web design service payment', 'COMPLETED', 'NORMAL', 'USER010', 'ADMIN010', '2024-12-10 15:50:00', '2024-12-10 15:45:00', '2024-12-10 15:55:00'),
+('PI2024120010', 'GOV001001', 'CORP002001', 'SCHEDULED', 'Contract Payment', 85000.00, 'USD', '2024-12-09 10:00:00', '2024-12-09 10:00:00', 'CONTRACT001', 'GOV001', 'INT010', 'Infrastructure contract payment', 'COMPLETED', 'HIGH', 'GOV001', 'ADMIN011', '2024-12-08 14:20:00', '2024-12-08 14:20:00', '2024-12-09 10:05:00');
+
+-- =============================================
+-- 8. BULK TRANSACTION GENERATOR PROCEDURE
+-- =============================================
+
+DELIMITER //
+CREATE PROCEDURE GenerateBulkTransactions()
+BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE total_instructions INT DEFAULT 0;
+    
+    -- Generate 1000 additional payment instructions over 6 months
+    WHILE i <= 1000 DO
+        SET @payer_account = (SELECT account_id FROM account_details WHERE account_type = 'CURRENT' AND available_balance > 1000 ORDER BY RAND() LIMIT 1);
+        SET @payee_account = (SELECT account_id FROM account_details WHERE account_type = 'CURRENT' AND account_id != @payer_account ORDER BY RAND() LIMIT 1);
+        SET @amount = ROUND(RAND() * 5000 + 100, 2);
+        SET @transfer_date = DATE_SUB('2024-12-18', INTERVAL FLOOR(RAND() * 180) DAY);
+        SET @instruction_id = CONCAT('PI', DATE_FORMAT(@transfer_date, '%Y%m%d'), '_', LPAD(i, 6, '0'));
+        
+        INSERT INTO payment_instructions (
+            instruction_id, payer_account_id, payee_account_id, instruction_type,
+            payment_purpose, amount, currency_code, execution_date,
+            payer_reference, payee_reference, internal_reference, narrative,
+            instruction_status, priority, created_by, authorized_by, authorization_date,
+            created_at, processed_at
+        ) VALUES (
+            @instruction_id,
+            @payer_account,
+            @payee_account,
+            ELT(FLOOR(RAND() * 2) + 1, 'IMMEDIATE', 'SCHEDULED'),
+            ELT(FLOOR(RAND() * 10) + 1, 'Personal Transfer', 'Business Payment', 'Loan Payment', 'Service Payment', 'Investment', 'Rent Payment', 'Utility Payment', 'Medical Payment', 'Education Payment', 'Emergency Transfer'),
+            @amount,
+            'USD',
+            @transfer_date,
+            CONCAT('REF', LPAD(i + 10, 6, '0')),
+            CONCAT('PAY', LPAD(i + 10, 6, '0')),
+            CONCAT('INT', LPAD(i + 10, 6, '0')),
+            CONCAT('Automated transaction ', i),
+            'COMPLETED',
+            ELT(FLOOR(RAND() * 3) + 1, 'NORMAL', 'HIGH', 'URGENT'),
+            CONCAT('USER', LPAD(FLOOR(RAND() * 100) + 1, 3, '0')),
+            CONCAT('ADMIN', LPAD(FLOOR(RAND() * 50) + 1, 3, '0')),
+            @transfer_date,
+            @transfer_date,
+            DATE_ADD(@transfer_date, INTERVAL 5 MINUTE)
+        );
+        
+        -- Create corresponding debit and credit transactions
+        INSERT INTO transactions (
+            transaction_id, instruction_id, transaction_type, account_id, amount,
+            currency_code, balance_before, balance_after, transaction_reference,
+            contra_account_id, transaction_status, value_date, posting_date, processed_by
+        ) VALUES 
+        (
+            CONCAT(@instruction_id, '_D'),
+            @instruction_id,
+            'DEBIT',
+            @payer_account,
+            @amount,
+            'USD',
+            (SELECT available_balance FROM account_details WHERE account_id = @payer_account),
+            (SELECT available_balance FROM account_details WHERE account_id = @payer_account) - @amount,
+            CONCAT('TXN', LPAD(i + 10, 6, '0'), 'D'),
+            @payee_account,
+            'COMPLETED',
+            DATE(@transfer_date),
+            DATE(@transfer_date),
+            'SYS001'
+        ),
+        (
+            CONCAT(@instruction_id, '_C'),
+            @instruction_id,
+            'CREDIT',
+            @payee_account,
+            @amount,
+            'USD',
+            (SELECT available_balance FROM account_details WHERE account_id = @payee_account),
+            (SELECT available_balance FROM account_details WHERE account_id = @payee_account) + @amount,
+            CONCAT('TXN', LPAD(i + 10, 6, '0'), 'C'),
+            @payer_account,
+            'COMPLETED',
+            DATE(@transfer_date),
+            DATE(@transfer_date),
+            'SYS001'
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+    
+    SELECT CONCAT('Generated ', i - 1, ' payment instructions and ', (i - 1) * 2, ' transactions') as result;
+END //
+DELIMITER ;
+
+-- Execute bulk transaction generation
+CALL GenerateBulkTransactions();
+DROP PROCEDURE GenerateBulkTransactions;
+
+-- =============================================
+-- 9. BENEFICIARIES
+-- =============================================
+
+INSERT INTO beneficiaries (beneficiary_id, payer_account_id, payee_account_id, beneficiary_name, nickname, beneficiary_status, approval_required, approved_by, approval_date, last_used_date, usage_count)
+SELECT 
+    CONCAT('BEN', LPAD(ROW_NUMBER() OVER (), 6, '0')),
+    p.account_id,
+    r.account_id,
+    r.account_name,
+    CONCAT('Payee ', ROW_NUMBER() OVER ()),
+    'ACTIVE',
+    TRUE,
+    CONCAT('ADMIN', LPAD(FLOOR(RAND() * 10) + 1, 3, '0')),
+    DATE_SUB('2024-12-18', INTERVAL FLOOR(RAND() * 365) DAY),
+    DATE_SUB('2024-12-18', INTERVAL FLOOR(RAND() * 30) DAY),
+    FLOOR(RAND() * 20) + 1
+FROM (SELECT account_id, account_name FROM account_details WHERE account_type = 'CURRENT' ORDER BY RAND() LIMIT 100) p
+CROSS JOIN (SELECT account_id, account_name FROM account_details WHERE account_type = 'CURRENT' ORDER BY RAND() LIMIT 2) r
+WHERE p.account_id != r.account_id;
+
+-- =============================================
+-- 10. RECURRENCE INSTRUCTIONS
+-- =============================================
+
+INSERT INTO recurrence_instructions (recurrence_id, instruction_id, frequency_type, frequency_interval, start_date, end_date, max_occurrences, recurrence_status, occurrences_completed, next_execution_date)
+SELECT 
+    CONCAT('REC', LPAD(ROW_NUMBER() OVER (), 6, '0')),
+    instruction_id,
+    ELT(FLOOR(RAND() * 4) + 1, 'MONTHLY', 'WEEKLY', 'QUARTERLY', 'YEARLY'),
+    1,
+    DATE(created_at),
+    DATE_ADD(DATE(created_at), INTERVAL 2 YEAR),
+    24,
+    'ACTIVE',
+    FLOOR(RAND() * 12) + 1,
+    DATE_ADD('2024-12-18', INTERVAL FLOOR(RAND() * 30) + 1 DAY)
+FROM payment_instructions 
+WHERE created_at >= '2024-06-18'
+ORDER BY RAND() 
+LIMIT 50;
+
+-- =============================================
+-- 11. ERROR LOGS
+-- =============================================
+
+INSERT INTO error_logs (instruction_id, error_code, error_message, error_type, module_name, function_name, resolved, resolved_by, resolved_at, resolution_notes)
+SELECT 
+    instruction_id,
+    CONCAT('E', LPAD(FLOOR(RAND() * 999) + 1, 3, '0')),
+    ELT(FLOOR(RAND() * 10) + 1, 
+        'Insufficient balance for transfer', 
+        'Daily limit exceeded', 
+        'Account temporarily locked', 
+        'External API timeout', 
+        'Invalid account number format',
+        'Network connection failed',
+        'Transaction timeout',
+        'Invalid currency code',
+        'Beneficiary not approved',
+        'Duplicate transaction reference'
+    ),
+    ELT(FLOOR(RAND() * 4) + 1, 'BUSINESS_RULE', 'VALIDATION', 'SYSTEM', 'EXTERNAL_API'),
+    ELT(FLOOR(RAND() * 5) + 1, 'TransferService', 'ValidationService', 'AccountService', 'LimitService', 'ExternalService'),
+    ELT(FLOOR(RAND() * 6) + 1, 'processTransfer', 'validateBalance', 'checkDailyLimit', 'validateAccountStatus', 'callValidationAPI', 'processPayment'),
+    TRUE,
+    CONCAT('ADMIN', LPAD(FLOOR(RAND() * 20) + 1, 3, '0')),
+    DATE_ADD(created_at, INTERVAL FLOOR(RAND() * 24) HOUR),
+    ELT(FLOOR(RAND() * 5) + 1,
+        'Issue resolved through manual intervention',
+        'Customer deposited additional funds',
+        'Limit temporarily increased for emergency',
+        'Account unlocked after verification',
+        'API service restored'
+    )
+FROM payment_instructions 
+WHERE RAND() < 0.03
+LIMIT 25;
+
+-- =============================================
+-- 12. AUDIT TRAIL SAMPLE DATA
+-- =============================================
+
+INSERT INTO audit_trail (table_name, record_id, action_type, old_values, new_values, changed_fields, user_id, session_id, ip_address, user_agent)
+SELECT 
+    'payment_instructions',
+    instruction_id,
+    'UPDATE',
+    JSON_OBJECT('instruction_status', 'PENDING', 'updated_at', DATE_SUB(created_at, INTERVAL 5 MINUTE)),
+    JSON_OBJECT('instruction_status', 'COMPLETED', 'updated_at', processed_at),
+    'instruction_status,updated_at',
+    created_by,
+    CONCAT('SES', LPAD(FLOOR(RAND() * 1000) + 1, 6, '0')),
+    CONCAT('192.168.1.', FLOOR(RAND() * 254) + 1),
+    ELT(FLOOR(RAND() * 3) + 1,
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36',
+        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+    )
+FROM payment_instructions 
+WHERE RAND() < 0.1
+LIMIT 50;
+
+-- Add account balance change audit trails
+INSERT INTO audit_trail (table_name, record_id, action_type, old_values, new_values, changed_fields, user_id, session_id, ip_address, user_agent)
+SELECT 
+    'account_details',
+    account_id,
+    'UPDATE',
+    JSON_OBJECT('available_balance', ROUND(available_balance - RAND() * 1000, 2), 'actual_balance', ROUND(actual_balance - RAND() * 1000, 2)),
+    JSON_OBJECT('available_balance', available_balance, 'actual_balance', actual_balance),
+    'available_balance,actual_balance',
+    'SYS001',
+    'SYSSES001',
+    '127.0.0.1',
+    'Internal System Process'
+FROM account_details 
+WHERE RAND() < 0.05
+LIMIT 30;
+
+-- =============================================
+-- 13. SYSTEM PARAMETERS
+-- =============================================
+
+INSERT INTO system_parameters (parameter_name, parameter_value, parameter_type, description, updated_by) VALUES
+('MAX_DAILY_TRANSFER_LIMIT', '50000.00', 'NUMBER', 'Maximum daily transfer limit per account', 'ADMIN001'),
+('TRANSFER_CUT_OFF_TIME', '15:00:00', 'STRING', 'Daily cut-off time for same-day transfers', 'ADMIN001'),
+('MINIMUM_TRANSFER_AMOUNT', '1.00', 'NUMBER', 'Minimum amount for internal transfers', 'ADMIN001'),
+('REQUIRE_DUAL_AUTHORIZATION', 'true', 'BOOLEAN', 'Require dual authorization for high-value transfers', 'ADMIN001'),
+('HIGH_VALUE_THRESHOLD', '10000.00', 'NUMBER', 'Amount threshold requiring additional authorization', 'ADMIN001'),
+('TRANSFER_FEE_PERCENTAGE', '0.001', 'NUMBER', 'Transfer fee as percentage of amount', 'ADMIN001'),
+('MAX_BENEFICIARIES_PER_ACCOUNT', '50', 'NUMBER', 'Maximum number of beneficiaries per account', 'ADMIN001'),
+('ACCOUNT_LOCKOUT_DURATION', '24', 'NUMBER', 'Hours to lock account after suspicious activity', 'ADMIN001'),
+('TRANSACTION_TIMEOUT_SECONDS', '30', 'NUMBER', 'Transaction processing timeout in seconds', 'ADMIN001'),
+('ENABLE_REAL_TIME_VALIDATION', 'true', 'BOOLEAN', 'Enable real-time account validation', 'ADMIN001');
+
+-- =============================================
+-- 14. HOLIDAY CALENDAR
+-- =============================================
+
+INSERT INTO holiday_calendar (holiday_date, holiday_name, country_code, is_banking_holiday) VALUES
+('2024-01-01', 'New Year Day', 'USA', TRUE),
+('2024-01-15', 'Martin Luther King Jr. Day', 'USA', TRUE),
+('2024-02-19', 'Presidents Day', 'USA', TRUE),
+('2024-05-27', 'Memorial Day', 'USA', TRUE),
+('2024-06-19', 'Juneteenth', 'USA', TRUE),
+('2024-07-04', 'Independence Day', 'USA', TRUE),
+('2024-09-02', 'Labor Day', 'USA', TRUE),
+('2024-10-14', 'Columbus Day', 'USA', TRUE),
+('2024-11-11', 'Veterans Day', 'USA', TRUE),
+('2024-11-28', 'Thanksgiving Day', 'USA', TRUE),
+('2024-12-25', 'Christmas Day', 'USA', TRUE),
+('2025-01-01', 'New Year Day', 'USA', TRUE),
+('2025-01-20', 'Martin Luther King Jr. Day', 'USA', TRUE),
+('2025-02-17', 'Presidents Day', 'USA', TRUE),
+('2025-05-26', 'Memorial Day', 'USA', TRUE),
+('2025-06-19', 'Juneteenth', 'USA', TRUE),
+('2025-07-04', 'Independence Day', 'USA', TRUE),
+('2025-09-01', 'Labor Day', 'USA', TRUE),
+('2025-10-13', 'Columbus Day', 'USA', TRUE),
+('2025-11-11', 'Veterans Day', 'USA', TRUE),
+('2025-11-27', 'Thanksgiving Day', 'USA', TRUE),
+('2025-12-25', 'Christmas Day', 'USA', TRUE);
+
+-- =============================================
+-- 15. COMMIT AND RE-ENABLE CONSTRAINTS
+-- =============================================
+
+COMMIT;
+SET FOREIGN_KEY_CHECKS = 1;
+SET UNIQUE_CHECKS = 1;
+SET AUTOCOMMIT = 1;
+
+-- =============================================
+-- 16. VERIFICATION AND SUMMARY QUERIES
+-- =============================================
+
+-- Data summary
+SELECT 'Data Loading Summary' as status;
+
+SELECT 'Customers' as entity, COUNT(*) as count, 'Total registered customers' as description FROM customers
+UNION ALL
+SELECT 'Accounts' as entity, COUNT(*) as count, 'Bank accounts across all customers' as description FROM account_details
+UNION ALL
+SELECT 'Account Holders' as entity, COUNT(*) as count, 'Account ownership relationships' as description FROM account_holders
+UNION ALL
+SELECT 'Account Limits' as entity, COUNT(*) as count, 'Transfer limit configurations' as description FROM account_limits
+UNION ALL
+SELECT 'Payment Instructions' as entity, COUNT(*) as count, 'Transfer requests/orders' as description FROM payment_instructions
+UNION ALL
+SELECT 'Transactions' as entity, COUNT(*) as count, 'Individual debit/credit entries' as description FROM transactions
+UNION ALL
+SELECT 'Beneficiaries' as entity, COUNT(*) as count, 'Pre-approved payee relationships' as description FROM beneficiaries
+UNION ALL
+SELECT 'Recurrence Instructions' as entity, COUNT(*) as count, 'Recurring payment schedules' as description FROM recurrence_instructions
+UNION ALL
+SELECT 'Error Logs' as entity, COUNT(*) as count, 'System error records' as description FROM error_logs
+UNION ALL
+SELECT 'Audit Trail' as entity, COUNT(*) as count, 'Change tracking records' as description FROM audit_trail
+UNION ALL
+SELECT 'System Parameters' as entity, COUNT(*) as count, 'Configuration settings' as description FROM system_parameters
+UNION ALL
+SELECT 'Holiday Calendar' as entity, COUNT(*) as count, 'Banking holiday definitions' as description FROM holiday_calendar;
+
+-- Customer distribution
+SELECT 
+    customer_type,
+    COUNT(*) as customer_count,
+    ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM customers), 1) as percentage
+FROM customers 
+GROUP BY customer_type
+ORDER BY customer_count DESC;
+
+-- Account distribution
+SELECT 
+    account_type,
+    COUNT(*) as account_count,
+    CONCAT(', FORMAT(SUM(available_balance), 2)) as total_balance
+FROM account_details 
+GROUP BY account_type
+ORDER BY SUM(available_balance) DESC;
+
+-- Transaction volume by month (last 6 months)
+SELECT 
+    DATE_FORMAT(created_at, '%Y-%m') as month,
+    COUNT(*) as transaction_count,
+    CONCAT(', FORMAT(SUM(amount), 2)) as total_amount
+FROM payment_instructions 
+WHERE created_at >= DATE_SUB('2024-12-18', INTERVAL 6 MONTH)
+GROUP BY DATE_FORMAT(created_at, '%Y-%m')
+ORDER BY month DESC;
+
+-- High-value transactions sample
+SELECT 
+    instruction_id,
+    CONCAT(', FORMAT(amount, 2)) as amount,
+    payment_purpose,
+    DATE(created_at) as transaction_date
+FROM payment_instructions 
+WHERE amount > 10000 
+ORDER BY amount DESC
+LIMIT 10;
+
+-- Account balance ranges
+SELECT 
+    CASE 
+        WHEN available_balance < 1000 THEN 'Under $1K'
+        WHEN available_balance < 10000 THEN '$1K - $10K'
+        WHEN available_balance < 100000 THEN '$10K - $100K'
+        WHEN available_balance < 1000000 THEN '$100K - $1M'
+        ELSE 'Over $1M'
+    END as balance_range,
+    COUNT(*) as account_count
+FROM account_details 
+GROUP BY 
+    CASE 
+        WHEN available_balance < 1000 THEN 'Under $1K'
+        WHEN available_balance < 10000 THEN '$1K - $10K'
+        WHEN available_balance < 100000 THEN '$10K - $100K'
+        WHEN available_balance < 1000000 THEN '$100K - $1M'
+        ELSE 'Over $1M'
+    END
+ORDER BY 
+    CASE 
+        WHEN available_balance < 1000 THEN 1
+        WHEN available_balance < 10000 THEN 2
+        WHEN available_balance < 100000 THEN 3
+        WHEN available_balance < 1000000 THEN 4
+        ELSE 5
+    END;
+
+-- Recent activity summary
+SELECT 
+    'Recent Activity (Last 7 days)' as period,
+    COUNT(*) as transactions,
+    CONCAT(', FORMAT(SUM(amount), 2)) as volume
+FROM payment_instructions 
+WHERE created_at >= DATE_SUB('2024-12-18', INTERVAL 7 DAY);
+
+-- Top 5 most active accounts
+SELECT 
+    ad.account_name,
+    COUNT(pi.instruction_id) as total_transactions,
+    CONCAT(', FORMAT(SUM(CASE WHEN pi.payer_account_id = ad.account_id THEN pi.amount ELSE 0 END), 2)) as total_sent,
+    CONCAT(', FORMAT(SUM(CASE WHEN pi.payee_account_id = ad.account_id THEN pi.amount ELSE 0 END), 2)) as total_received
+FROM account_details ad
+LEFT JOIN payment_instructions pi ON (ad.account_id = pi.payer_account_id OR ad.account_id = pi.payee_account_id)
+GROUP BY ad.account_id, ad.account_name
+HAVING total_transactions > 0
+ORDER BY total_transactions DESC
+LIMIT 5;
+
+SELECT 'Data loading completed successfully!' as final_status;

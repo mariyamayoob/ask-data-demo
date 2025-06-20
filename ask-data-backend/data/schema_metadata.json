@@ -1,0 +1,1433 @@
+{
+  "account_details": {
+    "description": "Master table containing comprehensive information about all bank accounts including balances, status, and branch details",
+    "business_purpose": "Serves as the central repository for account information, tracking current balances, account types, and operational status for all customer accounts within the bank",
+    "keywords": ["account", "balance", "savings", "current", "checking", "account number", "branch", "available balance", "account status", "account type", "currency", "minimum balance", "account information"],
+    "common_queries": [
+      "show all active accounts",
+      "find accounts with low balance",
+      "list savings accounts",
+      "accounts in specific branch",
+      "accounts with balance over amount",
+      "inactive or suspended accounts",
+      "account balance inquiry",
+      "accounts by currency type",
+      "accounts opened this month",
+      "accounts below minimum balance"
+    ],
+    "columns": {
+      "account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Unique account identifier",
+        "example_values": ["ACC001", "ACC002", "SAVINGS_123"]
+      },
+      "account_number": {
+        "type": "VARCHAR(50)",
+        "description": "Customer-facing account number",
+        "example_values": ["1234567890", "9876543210"]
+      },
+      "account_name": {
+        "type": "VARCHAR(100)",
+        "description": "Name of the account holder or account title",
+        "example_values": ["John Smith Savings", "ABC Corp Current"]
+      },
+      "account_type": {
+        "type": "ENUM",
+        "description": "Type of bank account",
+        "enum_values": ["SAVINGS", "CURRENT", "FIXED_DEPOSIT", "LOAN"],
+        "example_values": ["SAVINGS", "CURRENT"]
+      },
+      "branch_code": {
+        "type": "VARCHAR(10)",
+        "description": "Code of the branch where account is held",
+        "example_values": ["BR001", "BR002", "NYC01"]
+      },
+      "branch_name": {
+        "type": "VARCHAR(100)",
+        "description": "Name of the branch where account is held",
+        "example_values": ["Main Branch", "Downtown Branch"]
+      },
+      "currency_code": {
+        "type": "VARCHAR(3)",
+        "description": "Currency of the account",
+        "example_values": ["USD", "EUR", "GBP"]
+      },
+      "account_status": {
+        "type": "ENUM",
+        "description": "Current operational status of account",
+        "enum_values": ["ACTIVE", "INACTIVE", "SUSPENDED", "CLOSED"],
+        "example_values": ["ACTIVE", "INACTIVE"]
+      },
+      "opening_date": {
+        "type": "DATE",
+        "description": "Date when the account was opened"
+      },
+      "closing_date": {
+        "type": "DATE",
+        "description": "Date when the account was closed (if applicable)"
+      },
+      "minimum_balance": {
+        "type": "DECIMAL(15,2)",
+        "description": "Minimum balance required for this account"
+      },
+      "available_balance": {
+        "type": "DECIMAL(15,2)",
+        "description": "Available balance for transactions",
+        "example_values": ["1500.00", "25000.50", "100.25"]
+      },
+      "actual_balance": {
+        "type": "DECIMAL(15,2)",
+        "description": "Actual account balance including pending transactions"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the account record was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the account record was last updated"
+      }
+    },
+    "relationships": {
+      "primary_key": "account_id",
+      "foreign_keys": [],
+      "referenced_by": [
+        {
+          "table": "account_holders",
+          "foreign_key": "account_id",
+          "relationship_type": "one_to_many",
+          "description": "One account can have multiple holders (joint accounts)"
+        },
+        {
+          "table": "payment_instructions", 
+          "foreign_key": "payer_account_id",
+          "relationship_type": "one_to_many",
+          "description": "One account can be payer in multiple transfers"
+        },
+        {
+          "table": "payment_instructions",
+          "foreign_key": "payee_account_id", 
+          "relationship_type": "one_to_many",
+          "description": "One account can be payee in multiple transfers"
+        },
+        {
+          "table": "transactions",
+          "foreign_key": "account_id",
+          "relationship_type": "one_to_many",
+          "description": "One account has multiple transaction entries"
+        },
+        {
+          "table": "account_limits",
+          "foreign_key": "account_id",
+          "relationship_type": "one_to_many", 
+          "description": "One account can have multiple limit types"
+        },
+        {
+          "table": "beneficiaries",
+          "foreign_key": "payer_account_id",
+          "relationship_type": "one_to_many",
+          "description": "One account can have multiple beneficiaries"
+        },
+        {
+          "table": "beneficiaries",
+          "foreign_key": "payee_account_id",
+          "relationship_type": "one_to_many", 
+          "description": "One account can be beneficiary for multiple payers"
+        }
+      ],
+      "common_joins": [
+        {
+          "with_table": "account_holders",
+          "join_condition": "account_details.account_id = account_holders.account_id",
+          "purpose": "Get account ownership information",
+          "sql_example": "JOIN account_holders ah ON ad.account_id = ah.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "account_details.account_id = account_holders.account_id AND account_holders.customer_id = customers.customer_id",
+          "purpose": "Get customer information for account holders",
+          "sql_example": "JOIN account_holders ah ON ad.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        },
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "account_details.account_id = payment_instructions.payer_account_id OR account_details.account_id = payment_instructions.payee_account_id",
+          "purpose": "Get transfers where account is payer or payee",
+          "sql_example": "JOIN payment_instructions pi ON (ad.account_id = pi.payer_account_id OR ad.account_id = pi.payee_account_id)"
+        }
+      ]
+    }
+  },
+  
+  "customers": {
+    "description": "Customer master data containing personal information, contact details, and KYC status for all bank customers",
+    "business_purpose": "Maintains complete customer profiles including identity verification status, contact information, and demographic data required for banking operations and compliance",
+    "keywords": ["customer", "personal information", "name", "address", "phone", "email", "KYC", "customer status", "individual", "corporate", "customer number", "date of birth", "contact details"],
+    "common_queries": [
+      "find customer by name",
+      "customers with pending KYC",
+      "active customers list",
+      "customers by location",
+      "corporate customers",
+      "customers without email",
+      "recently registered customers",
+      "suspended customers",
+      "customers by age group",
+      "verify customer details"
+    ],
+    "columns": {
+      "customer_id": {
+        "type": "VARCHAR(20)",
+        "description": "Unique customer identifier",
+        "example_values": ["CUST001", "CUST002", "C123456"]
+      },
+      "customer_number": {
+        "type": "VARCHAR(50)",
+        "description": "Customer-facing customer number",
+        "example_values": ["CN001234", "CN567890"]
+      },
+      "first_name": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's first name",
+        "example_values": ["John", "Jane", "Michael"]
+      },
+      "middle_name": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's middle name (optional)",
+        "example_values": ["Robert", "Marie", ""]
+      },
+      "last_name": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's last name",
+        "example_values": ["Smith", "Johnson", "Williams"]
+      },
+      "date_of_birth": {
+        "type": "DATE",
+        "description": "Customer's date of birth",
+        "example_values": ["1985-05-15", "1992-11-23"]
+      },
+      "phone_number": {
+        "type": "VARCHAR(20)",
+        "description": "Customer's phone number",
+        "example_values": ["+1-555-123-4567", "+1-555-987-6543"]
+      },
+      "email": {
+        "type": "VARCHAR(100)",
+        "description": "Customer's email address",
+        "example_values": ["john.smith@email.com", "jane.doe@company.com"]
+      },
+      "address_line1": {
+        "type": "VARCHAR(200)",
+        "description": "First line of customer address",
+        "example_values": ["123 Main Street", "456 Oak Avenue"]
+      },
+      "address_line2": {
+        "type": "VARCHAR(200)",
+        "description": "Second line of customer address (optional)",
+        "example_values": ["Apt 4B", "Suite 200", ""]
+      },
+      "city": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's city",
+        "example_values": ["New York", "Los Angeles", "Chicago"]
+      },
+      "state": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's state/province",
+        "example_values": ["NY", "CA", "IL"]
+      },
+      "postal_code": {
+        "type": "VARCHAR(20)",
+        "description": "Customer's postal/ZIP code",
+        "example_values": ["10001", "90210", "60601"]
+      },
+      "country": {
+        "type": "VARCHAR(50)",
+        "description": "Customer's country",
+        "example_values": ["USA", "Canada", "Mexico"]
+      },
+      "customer_type": {
+        "type": "ENUM",
+        "description": "Type of customer",
+        "enum_values": ["INDIVIDUAL", "CORPORATE", "GOVERNMENT"],
+        "example_values": ["INDIVIDUAL", "CORPORATE"]
+      },
+      "customer_status": {
+        "type": "ENUM",
+        "description": "Current status of customer",
+        "enum_values": ["ACTIVE", "INACTIVE", "SUSPENDED"],
+        "example_values": ["ACTIVE", "INACTIVE"]
+      },
+      "kyc_status": {
+        "type": "ENUM",
+        "description": "Know Your Customer verification status",
+        "enum_values": ["PENDING", "VERIFIED", "REJECTED"],
+        "example_values": ["VERIFIED", "PENDING"]
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the customer record was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the customer record was last updated"
+      }
+    },
+    "relationships": {
+      "primary_key": "customer_id",
+      "foreign_keys": [],
+      "referenced_by": [
+        {
+          "table": "account_holders",
+          "foreign_key": "customer_id",
+          "relationship_type": "one_to_many",
+          "description": "One customer can hold multiple accounts"
+        }
+      ],
+      "common_joins": [
+        {
+          "with_table": "account_holders",
+          "join_condition": "customers.customer_id = account_holders.customer_id",
+          "purpose": "Get customer's account relationships",
+          "sql_example": "JOIN account_holders ah ON c.customer_id = ah.customer_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "customers.customer_id = account_holders.customer_id AND account_holders.account_id = account_details.account_id",
+          "purpose": "Get all accounts owned by customer",
+          "sql_example": "JOIN account_holders ah ON c.customer_id = ah.customer_id JOIN account_details ad ON ah.account_id = ad.account_id"
+        },
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "Via account_holders and account_details to get customer's transfers",
+          "purpose": "Get all transfers involving customer's accounts",
+          "sql_example": "JOIN account_holders ah ON c.customer_id = ah.customer_id JOIN payment_instructions pi ON (ah.account_id = pi.payer_account_id OR ah.account_id = pi.payee_account_id)"
+        }
+      ]
+    }
+  },
+  
+  "account_holders": {
+    "description": "Junction table establishing relationships between customers and accounts, supporting multiple ownership types including joint accounts and authorized signatories",
+    "business_purpose": "Manages complex account ownership structures by linking customers to accounts with specific relationship types, enabling joint accounts and authorized signatory arrangements",
+    "keywords": ["account ownership", "joint account", "primary holder", "authorized signatory", "account relationship", "account access", "multiple owners", "account permissions"],
+    "common_queries": [
+      "find all accounts for a customer",
+      "joint account holders",
+      "primary account holders",
+      "authorized signatories",
+      "accounts with multiple owners",
+      "customer account relationships",
+      "who can access this account",
+      "accounts ending relationship soon"
+    ],
+    "columns": {
+      "id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the relationship record"
+      },
+      "account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Account identifier being held",
+        "references": "account_details.account_id"
+      },
+      "customer_id": {
+        "type": "VARCHAR(20)",
+        "description": "Customer identifier holding the account",
+        "references": "customers.customer_id"
+      },
+      "relationship_type": {
+        "type": "ENUM",
+        "description": "Type of relationship between customer and account",
+        "enum_values": ["PRIMARY", "JOINT", "AUTHORIZED_SIGNATORY"],
+        "example_values": ["PRIMARY", "JOINT"]
+      },
+      "effective_date": {
+        "type": "DATE",
+        "description": "Date when the relationship became effective"
+      },
+      "end_date": {
+        "type": "DATE",
+        "description": "Date when the relationship ended (if applicable)"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the relationship record was created"
+      }
+    },
+    "relationships": {
+      "primary_key": "id",
+      "foreign_keys": [
+        {
+          "column": "account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "Links to the account being held"
+        },
+        {
+          "column": "customer_id", 
+          "references": "customers.customer_id",
+          "relationship_type": "many_to_one",
+          "description": "Links to the customer holding the account"
+        }
+      ],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "account_details",
+          "join_condition": "account_holders.account_id = account_details.account_id",
+          "purpose": "Get account information for the relationship",
+          "sql_example": "JOIN account_details ad ON ah.account_id = ad.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "account_holders.customer_id = customers.customer_id", 
+          "purpose": "Get customer information for the account holder",
+          "sql_example": "JOIN customers c ON ah.customer_id = c.customer_id"
+        },
+        {
+          "with_table": "customers_and_accounts",
+          "join_condition": "account_holders.account_id = account_details.account_id AND account_holders.customer_id = customers.customer_id",
+          "purpose": "Complete customer-account relationship with full details",
+          "sql_example": "JOIN account_details ad ON ah.account_id = ad.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        }
+      ]
+    }
+  },
+  
+  "payment_instructions": {
+    "description": "Central transaction table containing all internal transfer requests, amounts, scheduling information, and processing status from initiation to completion",
+    "business_purpose": "Tracks the complete lifecycle of internal money transfers including immediate, scheduled, and recurring payments with full audit trail and maker-checker approval workflow",
+    "keywords": ["transfer", "payment", "send money", "internal transfer", "payer", "payee", "amount", "scheduled payment", "pending transfer", "failed transfer", "transfer status", "payment instruction", "money movement", "fund transfer"],
+    "common_queries": [
+      "pending transfers",
+      "failed transfers",
+      "transfers over specific amount",
+      "scheduled transfers for today",
+      "transfers between specific accounts",
+      "high value transfers",
+      "transfers waiting authorization",
+      "completed transfers this month",
+      "recurring transfers",
+      "cancelled transfers",
+      "transfers by date range",
+      "urgent priority transfers"
+    ],
+    "columns": {
+      "instruction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Unique identifier for payment instruction",
+        "example_values": ["PI001", "PI002", "TRANSFER_123"]
+      },
+      "payer_account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Account ID sending the money",
+        "references": "account_details.account_id"
+      },
+      "payee_account_id": {
+        "type": "VARCHAR(20)", 
+        "description": "Account ID receiving the money",
+        "references": "account_details.account_id"
+      },
+      "instruction_type": {
+        "type": "ENUM",
+        "description": "Type of payment instruction",
+        "enum_values": ["IMMEDIATE", "SCHEDULED", "RECURRING"],
+        "example_values": ["IMMEDIATE", "SCHEDULED"]
+      },
+      "payment_purpose": {
+        "type": "VARCHAR(200)",
+        "description": "Purpose or reason for the payment"
+      },
+      "amount": {
+        "type": "DECIMAL(15,2)",
+        "description": "Transfer amount in currency",
+        "example_values": ["1000.00", "5000.50", "25000.00"]
+      },
+      "currency_code": {
+        "type": "VARCHAR(3)",
+        "description": "Currency of the transfer amount",
+        "example_values": ["USD", "EUR", "GBP"]
+      },
+      "scheduled_date": {
+        "type": "DATETIME",
+        "description": "When the transfer should be executed",
+        "example_values": ["2025-01-15 09:00:00", "2025-01-20 14:30:00"]
+      },
+      "execution_date": {
+        "type": "DATETIME",
+        "description": "When the transfer was actually executed"
+      },
+      "payer_reference": {
+        "type": "VARCHAR(100)",
+        "description": "Reference text for payer statement"
+      },
+      "payee_reference": {
+        "type": "VARCHAR(100)",
+        "description": "Reference text for payee statement"
+      },
+      "internal_reference": {
+        "type": "VARCHAR(100)",
+        "description": "Internal bank reference number"
+      },
+      "narrative": {
+        "type": "TEXT",
+        "description": "Additional description or notes for the transfer"
+      },
+      "instruction_status": {
+        "type": "ENUM",
+        "description": "Current status of the payment instruction",
+        "enum_values": ["PENDING", "SCHEDULED", "PROCESSING", "COMPLETED", "FAILED", "CANCELLED", "REJECTED"],
+        "example_values": ["PENDING", "COMPLETED", "FAILED"]
+      },
+      "priority": {
+        "type": "ENUM",
+        "description": "Processing priority level of the transfer",
+        "enum_values": ["LOW", "NORMAL", "HIGH", "URGENT"],
+        "example_values": ["NORMAL", "HIGH", "URGENT"]
+      },
+      "created_by": {
+        "type": "VARCHAR(50)",
+        "description": "User who created the payment instruction"
+      },
+      "authorized_by": {
+        "type": "VARCHAR(50)",
+        "description": "User who authorized the payment instruction"
+      },
+      "authorization_date": {
+        "type": "DATETIME",
+        "description": "When the instruction was authorized"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the instruction was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the instruction was last updated"
+      },
+      "processed_at": {
+        "type": "DATETIME",
+        "description": "When the instruction was processed"
+      }
+    },
+    "relationships": {
+      "primary_key": "instruction_id",
+      "foreign_keys": [
+        {
+          "column": "payer_account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one", 
+          "description": "Account sending the money"
+        },
+        {
+          "column": "payee_account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "Account receiving the money"
+        }
+      ],
+      "referenced_by": [
+        {
+          "table": "recurrence_instructions",
+          "foreign_key": "instruction_id",
+          "relationship_type": "one_to_one",
+          "description": "Payment instruction can have one recurring schedule"
+        },
+        {
+          "table": "transactions",
+          "foreign_key": "instruction_id", 
+          "relationship_type": "one_to_many",
+          "description": "One payment instruction generates multiple transaction entries"
+        },
+        {
+          "table": "error_logs",
+          "foreign_key": "instruction_id",
+          "relationship_type": "one_to_many",
+          "description": "Payment instruction can have multiple error entries"
+        }
+      ],
+      "common_joins": [
+        {
+          "with_table": "account_details",
+          "join_condition": "payment_instructions.payer_account_id = account_details.account_id",
+          "purpose": "Get payer account information",
+          "sql_example": "JOIN account_details payer ON pi.payer_account_id = payer.account_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "payment_instructions.payee_account_id = account_details.account_id",
+          "purpose": "Get payee account information", 
+          "sql_example": "JOIN account_details payee ON pi.payee_account_id = payee.account_id"
+        },
+        {
+          "with_table": "recurrence_instructions",
+          "join_condition": "payment_instructions.instruction_id = recurrence_instructions.instruction_id",
+          "purpose": "Get recurring payment schedule details",
+          "sql_example": "LEFT JOIN recurrence_instructions ri ON pi.instruction_id = ri.instruction_id"
+        },
+        {
+          "with_table": "transactions",
+          "join_condition": "payment_instructions.instruction_id = transactions.instruction_id",
+          "purpose": "Get detailed transaction entries for the payment",
+          "sql_example": "JOIN transactions t ON pi.instruction_id = t.instruction_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "Via account_details and account_holders to get customer information",
+          "purpose": "Get payer and payee customer details",
+          "sql_example": "JOIN account_details payer ON pi.payer_account_id = payer.account_id JOIN account_holders ah ON payer.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        }
+      ]
+    }
+  },
+  
+  "recurrence_instructions": {
+    "description": "Configuration table for recurring payment patterns including frequency, scheduling rules, and execution tracking for automated repeated transfers",
+    "business_purpose": "Enables automated recurring payments by defining complex scheduling patterns, tracking execution history, and managing the lifecycle of repetitive transfer instructions",
+    "keywords": ["recurring payment", "automatic payment", "scheduled recurring", "monthly payment", "weekly payment", "daily payment", "recurring transfer", "repetitive payment", "auto payment", "standing instruction", "frequency", "recurring schedule"],
+    "common_queries": [
+      "active recurring payments",
+      "monthly recurring transfers",
+      "recurring payments due today",
+      "paused recurring instructions",
+      "recurring payments ending soon",
+      "failed recurring payments",
+      "weekly recurring transfers",
+      "recurring payments by frequency",
+      "completed recurring cycles",
+      "recurring payments for account"
+    ],
+    "columns": {
+      "recurrence_id": {
+        "type": "VARCHAR(30)",
+        "description": "Unique identifier for the recurrence pattern"
+      },
+      "instruction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Payment instruction that this recurrence applies to",
+        "references": "payment_instructions.instruction_id"
+      },
+      "frequency_type": {
+        "type": "ENUM",
+        "description": "Type of recurrence pattern",
+        "enum_values": ["DAILY", "WEEKLY", "MONTHLY", "QUARTERLY", "YEARLY"],
+        "example_values": ["MONTHLY", "WEEKLY"]
+      },
+      "frequency_interval": {
+        "type": "INT",
+        "description": "Interval for recurrence (every N periods)",
+        "example_values": ["1", "2", "3"]
+      },
+      "day_of_week": {
+        "type": "ENUM",
+        "description": "Day of week for weekly recurrence",
+        "enum_values": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"],
+        "example_values": ["MONDAY", "FRIDAY"]
+      },
+      "day_of_month": {
+        "type": "INT",
+        "description": "Day of month for monthly recurrence (1-31 or negative for end of month)",
+        "example_values": ["1", "15", "-1"]
+      },
+      "start_date": {
+        "type": "DATE",
+        "description": "Date when the recurrence starts"
+      },
+      "end_date": {
+        "type": "DATE",
+        "description": "Date when the recurrence ends (optional)"
+      },
+      "max_occurrences": {
+        "type": "INT",
+        "description": "Maximum number of executions (optional)"
+      },
+      "recurrence_status": {
+        "type": "ENUM",
+        "description": "Current status of the recurrence",
+        "enum_values": ["ACTIVE", "PAUSED", "COMPLETED", "CANCELLED"],
+        "example_values": ["ACTIVE", "PAUSED"]
+      },
+      "occurrences_completed": {
+        "type": "INT",
+        "description": "Number of executions completed so far"
+      },
+      "next_execution_date": {
+        "type": "DATE",
+        "description": "Date of the next scheduled execution"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the recurrence was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the recurrence was last updated"
+      }
+    },
+    "relationships": {
+      "primary_key": "recurrence_id",
+      "foreign_keys": [
+        {
+          "column": "instruction_id",
+          "references": "payment_instructions.instruction_id",
+          "relationship_type": "one_to_one",
+          "description": "Links to the base payment instruction that repeats"
+        }
+      ],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions", 
+          "join_condition": "recurrence_instructions.instruction_id = payment_instructions.instruction_id",
+          "purpose": "Get the base payment instruction details",
+          "sql_example": "JOIN payment_instructions pi ON ri.instruction_id = pi.instruction_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "Via payment_instructions to get payer and payee account details",
+          "purpose": "Get account information for recurring payments",
+          "sql_example": "JOIN payment_instructions pi ON ri.instruction_id = pi.instruction_id JOIN account_details payer ON pi.payer_account_id = payer.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "Via payment_instructions, account_details, and account_holders",
+          "purpose": "Get customer information for recurring payment participants",
+          "sql_example": "JOIN payment_instructions pi ON ri.instruction_id = pi.instruction_id JOIN account_details ad ON pi.payer_account_id = ad.account_id JOIN account_holders ah ON ad.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        }
+      ]
+    }
+  },
+  
+  "transactions": {
+    "description": "Detailed transaction ledger recording individual debit and credit entries for all processed transfers with before/after balance tracking",
+    "business_purpose": "Maintains complete double-entry transaction records for audit compliance, balance reconciliation, and detailed transaction history for all account movements",
+    "keywords": ["transaction", "debit", "credit", "transaction history", "account movement", "balance change", "ledger entry", "posting", "value date", "transaction log", "money movement", "account activity"],
+    "common_queries": [
+      "transaction history for account",
+      "recent transactions",
+      "large transactions over amount",
+      "failed transactions",
+      "transactions on specific date",
+      "debit transactions",
+      "credit transactions",
+      "reversed transactions",
+      "transactions between dates",
+      "pending transactions"
+    ],
+    "columns": {
+      "transaction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Unique identifier for the transaction entry"
+      },
+      "instruction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Payment instruction that generated this transaction",
+        "references": "payment_instructions.instruction_id"
+      },
+      "transaction_type": {
+        "type": "ENUM",
+        "description": "Type of transaction entry",
+        "enum_values": ["DEBIT", "CREDIT", "REVERSAL"],
+        "example_values": ["DEBIT", "CREDIT"]
+      },
+      "account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Account affected by this transaction",
+        "references": "account_details.account_id"
+      },
+      "amount": {
+        "type": "DECIMAL(15,2)",
+        "description": "Transaction amount",
+        "example_values": ["1000.00", "500.50", "25000.00"]
+      },
+      "currency_code": {
+        "type": "VARCHAR(3)",
+        "description": "Currency of the transaction",
+        "example_values": ["USD", "EUR", "GBP"]
+      },
+      "balance_before": {
+        "type": "DECIMAL(15,2)",
+        "description": "Account balance before this transaction"
+      },
+      "balance_after": {
+        "type": "DECIMAL(15,2)",
+        "description": "Account balance after this transaction"
+      },
+      "transaction_reference": {
+        "type": "VARCHAR(100)",
+        "description": "Reference text for the transaction"
+      },
+      "contra_account_id": {
+        "type": "VARCHAR(20)",
+        "description": "The other account involved in the transfer",
+        "references": "account_details.account_id"
+      },
+      "transaction_status": {
+        "type": "ENUM",
+        "description": "Current status of the transaction",
+        "enum_values": ["PENDING", "COMPLETED", "FAILED", "REVERSED"],
+        "example_values": ["COMPLETED", "PENDING"]
+      },
+      "value_date": {
+        "type": "DATE",
+        "description": "Effective date of the transaction"
+      },
+      "posting_date": {
+        "type": "DATE",
+        "description": "Date when the transaction was posted"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the transaction was created"
+      },
+      "processed_by": {
+        "type": "VARCHAR(50)",
+        "description": "User or system that processed the transaction"
+      }
+    },
+    "relationships": {
+      "primary_key": "transaction_id",
+      "foreign_keys": [
+        {
+          "column": "instruction_id",
+          "references": "payment_instructions.instruction_id",
+          "relationship_type": "many_to_one",
+          "description": "Links to the payment instruction that generated this transaction"
+        },
+        {
+          "column": "account_id",
+          "references": "account_details.account_id", 
+          "relationship_type": "many_to_one",
+          "description": "Account affected by this transaction entry"
+        },
+        {
+          "column": "contra_account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "The other account involved in the transfer"
+        }
+      ],
+      "referenced_by": [
+        {
+          "table": "error_logs",
+          "foreign_key": "transaction_id",
+          "relationship_type": "one_to_many",
+          "description": "Transaction can have multiple error entries"
+        }
+      ],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "transactions.instruction_id = payment_instructions.instruction_id",
+          "purpose": "Get payment instruction details for the transaction",
+          "sql_example": "JOIN payment_instructions pi ON t.instruction_id = pi.instruction_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "transactions.account_id = account_details.account_id",
+          "purpose": "Get account information for the transaction",
+          "sql_example": "JOIN account_details ad ON t.account_id = ad.account_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "transactions.contra_account_id = account_details.account_id",
+          "purpose": "Get contra account information",
+          "sql_example": "JOIN account_details contra ON t.contra_account_id = contra.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "Via account_details and account_holders to get customer information",
+          "purpose": "Get customer information for transaction participants",
+          "sql_example": "JOIN account_details ad ON t.account_id = ad.account_id JOIN account_holders ah ON ad.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        }
+      ]
+    }
+  },
+  
+  "account_limits": {
+    "description": "Account-specific transaction limits and controls defining maximum amounts for daily, monthly, and per-transaction transfer restrictions",
+    "business_purpose": "Enforces risk management and regulatory compliance by setting and tracking transaction limits per account, preventing unauthorized large transfers and managing exposure",
+    "keywords": ["account limits", "transaction limits", "daily limit", "monthly limit", "transfer restrictions", "spending limits", "maximum amount", "limit controls", "risk management", "exposure limits"],
+    "common_queries": [
+      "account limits for customer",
+      "accounts exceeding limits",
+      "daily limit utilization",
+      "accounts with high limits",
+      "expired limits",
+      "limit changes this month",
+      "accounts without limits",
+      "limit violations",
+      "monthly limit usage"
+    ],
+    "columns": {
+      "limit_id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the limit record"
+      },
+      "account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Account that the limit applies to",
+        "references": "account_details.account_id"
+      },
+      "limit_type": {
+        "type": "ENUM",
+        "description": "Type of transaction limit",
+        "enum_values": ["DAILY_DEBIT", "DAILY_CREDIT", "MONTHLY_DEBIT", "MONTHLY_CREDIT", "SINGLE_TRANSACTION"],
+        "example_values": ["DAILY_DEBIT", "MONTHLY_DEBIT"]
+      },
+      "limit_amount": {
+        "type": "DECIMAL(15,2)",
+        "description": "Maximum amount for this limit type",
+        "example_values": ["10000.00", "50000.00", "100000.00"]
+      },
+      "currency_code": {
+        "type": "VARCHAR(3)",
+        "description": "Currency of the limit amount",
+        "example_values": ["USD", "EUR", "GBP"]
+      },
+      "effective_date": {
+        "type": "DATE",
+        "description": "Date when the limit becomes effective"
+      },
+      "expiry_date": {
+        "type": "DATE",
+        "description": "Date when the limit expires (optional)"
+      },
+      "is_active": {
+        "type": "BOOLEAN",
+        "description": "Whether the limit is currently active",
+        "example_values": ["true", "false"]
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the limit was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the limit was last updated"
+      }
+    },
+    "relationships": {
+      "primary_key": "limit_id",
+      "foreign_keys": [
+        {
+          "column": "account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "Account that the limit applies to"
+        }
+      ],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "account_details",
+          "join_condition": "account_limits.account_id = account_details.account_id",
+          "purpose": "Get account information for the limits",
+          "sql_example": "JOIN account_details ad ON al.account_id = ad.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "Via account_details and account_holders to get customer information",
+          "purpose": "Get customer information for account limits",
+          "sql_example": "JOIN account_details ad ON al.account_id = ad.account_id JOIN account_holders ah ON ad.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        },
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "Via account_details to check limits against transfers",
+          "purpose": "Compare transfer amounts against account limits",
+          "sql_example": "JOIN account_details ad ON al.account_id = ad.account_id JOIN payment_instructions pi ON (ad.account_id = pi.payer_account_id OR ad.account_id = pi.payee_account_id)"
+        }
+      ]
+    }
+  },
+  
+  "beneficiaries": {
+    "description": "Pre-approved payee directory containing validated recipient accounts for streamlined and secure repeat transfers",
+    "business_purpose": "Enhances security and user experience by maintaining a list of verified transfer recipients, reducing fraud risk and simplifying repeat payment processes",
+    "keywords": ["beneficiary", "payee", "recipient", "saved payee", "approved recipient", "trusted payee", "repeat recipient", "payee list", "transfer recipient", "beneficiary management"],
+    "common_queries": [
+      "beneficiaries for account",
+      "pending beneficiary approvals",
+      "frequently used beneficiaries",
+      "recently added beneficiaries",
+      "suspended beneficiaries",
+      "beneficiaries not used recently",
+      "active beneficiaries",
+      "beneficiary approval status"
+    ],
+    "columns": {
+      "beneficiary_id": {
+        "type": "VARCHAR(30)",
+        "description": "Unique identifier for the beneficiary relationship"
+      },
+      "payer_account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Account that can send money to this beneficiary",
+        "references": "account_details.account_id"
+      },
+      "payee_account_id": {
+        "type": "VARCHAR(20)",
+        "description": "Beneficiary account that receives money",
+        "references": "account_details.account_id"
+      },
+      "beneficiary_name": {
+        "type": "VARCHAR(100)",
+        "description": "Display name for the beneficiary",
+        "example_values": ["John Smith", "ABC Corporation", "Jane Doe Savings"]
+      },
+      "nickname": {
+        "type": "VARCHAR(50)",
+        "description": "Optional nickname for easy identification",
+        "example_values": ["John", "Office Account", "Mom"]
+      },
+      "beneficiary_status": {
+        "type": "ENUM",
+        "description": "Current status of the beneficiary",
+        "enum_values": ["PENDING", "ACTIVE", "SUSPENDED", "DELETED"],
+        "example_values": ["ACTIVE", "PENDING"]
+      },
+      "approval_required": {
+        "type": "BOOLEAN",
+        "description": "Whether beneficiary requires approval for activation",
+        "example_values": ["true", "false"]
+      },
+      "approved_by": {
+        "type": "VARCHAR(50)",
+        "description": "User who approved the beneficiary (if applicable)"
+      },
+      "approval_date": {
+        "type": "DATETIME",
+        "description": "Date when the beneficiary was approved"
+      },
+      "last_used_date": {
+        "type": "DATETIME",
+        "description": "Date when this beneficiary was last used for a transfer"
+      },
+      "usage_count": {
+        "type": "INT",
+        "description": "Number of times this beneficiary has been used",
+        "example_values": ["0", "5", "25"]
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the beneficiary was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the beneficiary was last updated"
+      }
+    },
+    "relationships": {
+      "primary_key": "beneficiary_id",
+      "foreign_keys": [
+        {
+          "column": "payer_account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "Account that can send money to this beneficiary"
+        },
+        {
+          "column": "payee_account_id",
+          "references": "account_details.account_id",
+          "relationship_type": "many_to_one",
+          "description": "Beneficiary account that receives money"
+        }
+      ],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "account_details",
+          "join_condition": "beneficiaries.payer_account_id = account_details.account_id",
+          "purpose": "Get payer account information",
+          "sql_example": "JOIN account_details payer ON b.payer_account_id = payer.account_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "beneficiaries.payee_account_id = account_details.account_id",
+          "purpose": "Get beneficiary account information",
+          "sql_example": "JOIN account_details payee ON b.payee_account_id = payee.account_id"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "Via account_details and account_holders to get customer information",
+          "purpose": "Get customer information for payer and payee",
+          "sql_example": "JOIN account_details payer ON b.payer_account_id = payer.account_id JOIN account_holders ah ON payer.account_id = ah.account_id JOIN customers c ON ah.customer_id = c.customer_id"
+        },
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "beneficiaries.payer_account_id = payment_instructions.payer_account_id AND beneficiaries.payee_account_id = payment_instructions.payee_account_id",
+          "purpose": "Get transfer history to this beneficiary",
+          "sql_example": "JOIN payment_instructions pi ON (b.payer_account_id = pi.payer_account_id AND b.payee_account_id = pi.payee_account_id)"
+        }
+      ]
+    }
+  },
+  
+  "audit_trail": {
+    "description": "Comprehensive audit log capturing all system changes, user actions, and data modifications with detailed before/after values for compliance tracking",
+    "business_purpose": "Ensures regulatory compliance and security by maintaining immutable records of all system activities, enabling investigation, compliance reporting, and change tracking",
+    "keywords": ["audit", "change log", "system changes", "user activity", "audit trail", "compliance log", "change tracking", "data changes", "system audit", "activity log", "modification history"],
+    "common_queries": [
+      "changes by user",
+      "recent system changes",
+      "changes to specific record",
+      "audit trail for date range",
+      "user activity log",
+      "changes to payment instructions",
+      "account modifications",
+      "unauthorized changes",
+      "compliance audit report"
+    ],
+    "columns": {
+      "audit_id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the audit record"
+      },
+      "table_name": {
+        "type": "VARCHAR(50)",
+        "description": "Name of the table that was modified",
+        "example_values": ["payment_instructions", "account_details", "customers"]
+      },
+      "record_id": {
+        "type": "VARCHAR(50)",
+        "description": "ID of the specific record that was modified",
+        "example_values": ["PI001", "ACC123", "CUST456"]
+      },
+      "action_type": {
+        "type": "ENUM",
+        "description": "Type of action performed",
+        "enum_values": ["INSERT", "UPDATE", "DELETE"],
+        "example_values": ["UPDATE", "INSERT"]
+      },
+      "old_values": {
+        "type": "JSON",
+        "description": "Previous values before the change (for UPDATE and DELETE)"
+      },
+      "new_values": {
+        "type": "JSON",
+        "description": "New values after the change (for INSERT and UPDATE)"
+      },
+      "changed_fields": {
+        "type": "TEXT",
+        "description": "Comma-separated list of fields that were changed"
+      },
+      "user_id": {
+        "type": "VARCHAR(50)",
+        "description": "User who made the change",
+        "example_values": ["admin", "john.smith", "system"]
+      },
+      "session_id": {
+        "type": "VARCHAR(100)",
+        "description": "Session identifier for the user action"
+      },
+      "ip_address": {
+        "type": "VARCHAR(45)",
+        "description": "IP address from which the change was made",
+        "example_values": ["192.168.1.100", "10.0.0.15"]
+      },
+      "user_agent": {
+        "type": "TEXT",
+        "description": "User agent string of the client making the change"
+      },
+      "action_timestamp": {
+        "type": "TIMESTAMP",
+        "description": "When the change was made"
+      }
+    },
+    "relationships": {
+      "primary_key": "audit_id",
+      "foreign_keys": [],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "audit_trail.table_name = 'payment_instructions' AND audit_trail.record_id = payment_instructions.instruction_id",
+          "purpose": "Get audit history for specific payment instructions",
+          "sql_example": "JOIN payment_instructions pi ON (at.table_name = 'payment_instructions' AND at.record_id = pi.instruction_id)"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "audit_trail.table_name = 'account_details' AND audit_trail.record_id = account_details.account_id",
+          "purpose": "Get audit history for account changes",
+          "sql_example": "JOIN account_details ad ON (at.table_name = 'account_details' AND at.record_id = ad.account_id)"
+        },
+        {
+          "with_table": "customers",
+          "join_condition": "audit_trail.table_name = 'customers' AND audit_trail.record_id = customers.customer_id",
+          "purpose": "Get audit history for customer changes",
+          "sql_example": "JOIN customers c ON (at.table_name = 'customers' AND at.record_id = c.customer_id)"
+        }
+      ]
+    }
+  },
+  
+  "error_logs": {
+    "description": "System error tracking table recording technical failures, business rule violations, and processing errors with resolution status",
+    "business_purpose": "Supports system stability and troubleshooting by capturing detailed error information, tracking resolution progress, and identifying recurring issues for system improvement",
+    "keywords": ["error", "system error", "failure", "exception", "technical issue", "error log", "system failure", "processing error", "bug tracking", "error resolution", "system problems"],
+    "common_queries": [
+      "recent errors",
+      "unresolved errors",
+      "errors for specific instruction",
+      "frequent error types",
+      "system errors today",
+      "validation errors",
+      "business rule errors",
+      "resolved errors",
+      "critical errors"
+    ],
+    "columns": {
+      "error_id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the error record"
+      },
+      "instruction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Payment instruction that caused the error (if applicable)",
+        "references": "payment_instructions.instruction_id"
+      },
+      "transaction_id": {
+        "type": "VARCHAR(30)",
+        "description": "Transaction that caused the error (if applicable)",
+        "references": "transactions.transaction_id"
+      },
+      "error_code": {
+        "type": "VARCHAR(20)",
+        "description": "Standardized error code for categorization",
+        "example_values": ["INSUFF_FUNDS", "INVALID_ACCOUNT", "LIMIT_EXCEEDED"]
+      },
+      "error_message": {
+        "type": "TEXT",
+        "description": "Detailed error message describing the issue"
+      },
+      "error_type": {
+        "type": "ENUM",
+        "description": "Category of error that occurred",
+        "enum_values": ["VALIDATION", "BUSINESS_RULE", "SYSTEM", "EXTERNAL_API"],
+        "example_values": ["VALIDATION", "BUSINESS_RULE"]
+      },
+      "module_name": {
+        "type": "VARCHAR(50)",
+        "description": "System module where the error occurred",
+        "example_values": ["payment_processor", "account_validator", "limit_checker"]
+      },
+      "function_name": {
+        "type": "VARCHAR(50)",
+        "description": "Specific function where the error occurred",
+        "example_values": ["validate_transfer", "check_balance", "execute_payment"]
+      },
+      "stack_trace": {
+        "type": "TEXT",
+        "description": "Technical stack trace for debugging purposes"
+      },
+      "resolved": {
+        "type": "BOOLEAN",
+        "description": "Whether the error has been resolved",
+        "example_values": ["true", "false"]
+      },
+      "resolved_by": {
+        "type": "VARCHAR(50)",
+        "description": "User who resolved the error"
+      },
+      "resolved_at": {
+        "type": "DATETIME",
+        "description": "Date and time when the error was resolved"
+      },
+      "resolution_notes": {
+        "type": "TEXT",
+        "description": "Notes about how the error was resolved"
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the error was logged"
+      }
+    },
+    "relationships": {
+      "primary_key": "error_id",
+      "foreign_keys": [
+        {
+          "column": "instruction_id",
+          "references": "payment_instructions.instruction_id",
+          "relationship_type": "many_to_one",
+          "description": "Payment instruction that caused the error (if applicable)"
+        },
+        {
+          "column": "transaction_id", 
+          "references": "transactions.transaction_id",
+          "relationship_type": "many_to_one",
+          "description": "Transaction that caused the error (if applicable)"
+        }
+      ],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "error_logs.instruction_id = payment_instructions.instruction_id",
+          "purpose": "Get payment instruction details for the error",
+          "sql_example": "LEFT JOIN payment_instructions pi ON el.instruction_id = pi.instruction_id"
+        },
+        {
+          "with_table": "transactions",
+          "join_condition": "error_logs.transaction_id = transactions.transaction_id",
+          "purpose": "Get transaction details for the error",
+          "sql_example": "LEFT JOIN transactions t ON el.transaction_id = t.transaction_id"
+        },
+        {
+          "with_table": "account_details",
+          "join_condition": "Via payment_instructions to get account information related to errors",
+          "purpose": "Get account information for payment-related errors",
+          "sql_example": "LEFT JOIN payment_instructions pi ON el.instruction_id = pi.instruction_id LEFT JOIN account_details ad ON pi.payer_account_id = ad.account_id"
+        }
+      ]
+    }
+  },
+  
+  "system_parameters": {
+    "description": "System configuration settings and business rules including transfer limits, processing times, and operational parameters",
+    "business_purpose": "Centralizes system configuration management, enabling dynamic adjustment of business rules, limits, and operational parameters without code changes",
+    "keywords": ["system config", "configuration", "system settings", "business rules", "parameters", "system limits", "operational settings", "config management", "system parameters"],
+    "common_queries": [
+      "current system limits",
+      "transfer cut-off times",
+      "maximum transfer amounts",
+      "system configuration",
+      "recently changed parameters",
+      "security settings",
+      "operational parameters",
+      "business rule settings"
+    ],
+    "columns": {
+      "parameter_id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the parameter"
+      },
+      "parameter_name": {
+        "type": "VARCHAR(100)",
+        "description": "Unique name of the system parameter",
+        "example_values": ["MAX_DAILY_TRANSFER_LIMIT", "TRANSFER_CUT_OFF_TIME", "REQUIRE_DUAL_AUTHORIZATION"]
+      },
+      "parameter_value": {
+        "type": "TEXT",
+        "description": "Value of the parameter (stored as text)",
+        "example_values": ["50000.00", "15:00:00", "true"]
+      },
+      "parameter_type": {
+        "type": "ENUM",
+        "description": "Data type of the parameter value",
+        "enum_values": ["STRING", "NUMBER", "BOOLEAN", "JSON"],
+        "example_values": ["NUMBER", "STRING", "BOOLEAN"]
+      },
+      "description": {
+        "type": "TEXT",
+        "description": "Human-readable description of the parameter"
+      },
+      "is_encrypted": {
+        "type": "BOOLEAN",
+        "description": "Whether the parameter value is encrypted",
+        "example_values": ["false", "true"]
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the parameter was created"
+      },
+      "updated_at": {
+        "type": "TIMESTAMP",
+        "description": "When the parameter was last updated"
+      },
+      "updated_by": {
+        "type": "VARCHAR(50)",
+        "description": "User who last updated the parameter"
+      }
+    },
+    "relationships": {
+      "primary_key": "parameter_id",
+      "foreign_keys": [],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "Used for applying business rules and limits validation",
+          "purpose": "Apply system parameters to validate payment instructions",
+          "sql_example": "-- Parameters are typically used in WHERE clauses for validation rather than JOINs"
+        },
+        {
+          "with_table": "account_limits",
+          "join_condition": "Used for comparing account limits against system-wide limits",
+          "purpose": "Compare account-specific limits with system parameters",
+          "sql_example": "-- System parameters provide default or maximum values for comparison"
+        }
+      ]
+    }
+  },
+  
+  "holiday_calendar": {
+    "description": "Banking holiday and non-processing day calendar affecting transfer scheduling and same-day processing availability",
+    "business_purpose": "Ensures accurate transfer scheduling by identifying non-business days when certain processing operations are unavailable, supporting proper settlement timing",
+    "keywords": ["holiday", "banking holiday", "non-business day", "processing calendar", "bank holiday", "weekend", "non-processing day", "business day", "settlement calendar"],
+    "common_queries": [
+      "upcoming holidays",
+      "banking holidays this month",
+      "next business day",
+      "holiday calendar",
+      "non-processing days",
+      "holidays affecting transfers",
+      "business days remaining",
+      "holiday schedule"
+    ],
+    "columns": {
+      "holiday_id": {
+        "type": "INT",
+        "description": "Auto-increment primary key for the holiday record"
+      },
+      "holiday_date": {
+        "type": "DATE",
+        "description": "Date of the holiday",
+        "example_values": ["2025-01-01", "2025-07-04", "2025-12-25"]
+      },
+      "holiday_name": {
+        "type": "VARCHAR(100)",
+        "description": "Name of the holiday",
+        "example_values": ["New Year Day", "Independence Day", "Christmas Day"]
+      },
+      "country_code": {
+        "type": "VARCHAR(3)",
+        "description": "Country where this holiday applies",
+        "example_values": ["USA", "CAN", "GBR"]
+      },
+      "is_banking_holiday": {
+        "type": "BOOLEAN",
+        "description": "Whether this affects banking operations",
+        "example_values": ["true", "false"]
+      },
+      "created_at": {
+        "type": "TIMESTAMP",
+        "description": "When the holiday record was created"
+      }
+    },
+    "relationships": {
+      "primary_key": "holiday_id",
+      "foreign_keys": [],
+      "referenced_by": [],
+      "common_joins": [
+        {
+          "with_table": "payment_instructions",
+          "join_condition": "Used to validate scheduled_date against holidays",
+          "purpose": "Ensure transfers are not scheduled on holidays",
+          "sql_example": "LEFT JOIN holiday_calendar hc ON DATE(pi.scheduled_date) = hc.holiday_date"
+        },
+        {
+          "with_table": "recurrence_instructions",
+          "join_condition": "Used to calculate next_execution_date avoiding holidays",
+          "purpose": "Skip holidays when calculating recurring payment dates",
+          "sql_example": "LEFT JOIN holiday_calendar hc ON ri.next_execution_date = hc.holiday_date"
+        },
+        {
+          "with_table": "transactions",
+          "join_condition": "Used to validate value_date and posting_date",
+          "purpose": "Ensure transactions are not posted on holidays",
+          "sql_example": "LEFT JOIN holiday_calendar hc ON t.value_date = hc.holiday_date"
+        }
+      ]
+    }
+  }
+}
